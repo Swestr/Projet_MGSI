@@ -19,9 +19,9 @@ Particule::Particule()
   position.push_back(frand(0, 1));
   position.push_back(frand(0, 1));
 
-  vitesse.push_back(frand(0, 100));
-  vitesse.push_back(frand(0, 100));
-  vitesse.push_back(frand(0, 100));
+  vitesse.push_back(frand(15, 50));
+  vitesse.push_back(frand(15, 50));
+  vitesse.push_back(frand(15, 50));
 
   //direction.push_back(frand(0, 100);
   //direction.push_back(frand(0, 100);
@@ -46,24 +46,25 @@ void Particule::print()
 }
 void Particule::draw()
 {
-    for (size_t i = 0; i < n; i++)
-    {
-      for (size_t j = 0; j < n; j++)
-      {
-        for(size_t k = 0; k < n ; k++)
-        {
-          float fi = (float)i / (float)n;
-          float fj = (float)j / (float)n;
-          float fk = (float)k / (float)n;
-          if (dedans(fi - position[0], fj - position[1], fk - position[2]))
-          {
-            glPushMatrix();
-            glColor3f(1, 1, 1);
-            glTranslatef(fi, fj, fk);
-            glutSolidCube(1.0/n);
-            glPopMatrix();
-          }
-      }
-    }
-  }
+  glPushMatrix();
+  glColor3f(1, 1, 1);
+  glTranslatef(position[0], position[1], position[2]);
+  glutSolidCube(1.0/(n*4));
+  glPopMatrix();
+
+}
+void Particule::move(std::vector<double> vect_dir)
+{
+  double x = position[0];
+  double y = position[1];
+  double z = position[2];
+
+  //Il faudra ajouter le bruit de Perlin
+  // double bruitX = bruit();
+  // double bruitY = bruit();
+  // double bruitZ = bruit();
+
+  position[0] = vect_dir[0]*(float)(vitesse[0]/35) + x;
+  position[1] = vect_dir[1]*(float)(vitesse[1]/35) + y;
+  position[2] = vect_dir[2]*(float)(vitesse[2]/35) + z;
 }
