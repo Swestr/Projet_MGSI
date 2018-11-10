@@ -60,11 +60,11 @@ void Particule::move(std::vector<double> vect_dir)
   double z = position[2];
 
   //Il faudra ajouter le bruit de Perlin
-  // double bruitX = bruit();
-  // double bruitY = bruit();
-  // double bruitZ = bruit();
+  double bruitX = frand(0, 0.0001);
+  double bruitY = frand(0, 0.0001);
+  double bruitZ = frand(0, 0.0001);
 
-  position[0] = vect_dir[0]*(float)(vitesse[0]/35) + x;
-  position[1] = vect_dir[1]*(float)(vitesse[1]/35) + y;
-  position[2] = vect_dir[2]*(float)(vitesse[2]/35) + z;
+  position[0] = vect_dir[0]*(float)(vitesse[0]/35) + x + bruitX;
+  position[1] = vect_dir[1]*(float)(vitesse[1]/35) + y + bruitY;
+  position[2] = vect_dir[2]*(float)(vitesse[2]/35) + z + bruitZ;
 }
