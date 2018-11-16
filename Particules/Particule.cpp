@@ -16,7 +16,7 @@ Particule::Particule()
   vie = frand(0, 100);
 
   position.push_back(frand(0, 1));
-  position.push_back(frand(0, 1));
+  position.push_back(frand(0, 0.1));
   position.push_back(frand(0, 1));
 
   vitesse.push_back(frand(15, 50));

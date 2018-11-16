@@ -12,16 +12,18 @@ char presse;
 int anglex,angley,x,y,xold,yold;
 Particules p(N);
 
+float coordY = 0.5;
+
 /* Création des vents */
 /* (Je ne peut pas passer le vent en paramètre de animation donc les paramètres doivent être globaux) */
 
-std::vector<double> p1V1{-10, 0, -10};
-std::vector<double> p2V1{20, 0.4, 20};
+std::vector<double> p1V1{-10, 0.5, -10};
+std::vector<double> p2V1{20, 0.7, 20};
 std::vector<double> vecDirV1{0.7, 1, 0};
 Voxel *v1 = new Voxel(p1V1, p2V1, vecDirV1, 1.5);
 //
-std::vector<double> p1V2{-10, 0.65, -10};
-std::vector<double> p2V2{20, 1, 20};
+std::vector<double> p1V2{-10, 1, -10};
+std::vector<double> p2V2{20, 1.5, 20};
 std::vector<double> vecDirV2{-0.7, 1, 0};
 Voxel *v2 = new Voxel(p1V2, p2V2, vecDirV2, 1.25);
 
@@ -106,7 +108,7 @@ void affichage()
   glLoadIdentity();
   glRotatef(angley,1.0,0.0,0.0);
   glRotatef(anglex,0.0,1.0,0.0);
-  gluLookAt(0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f);
+  gluLookAt(0.5f, coordY, 0.5f, 0.5f, coordY, 0.0f, 0.0f, 1.0f, 0.0f);
 
   // for (size_t i = 0; i < nbVoxels; i++) {
   //   voxels[i]->draw(i, 0, 1);
@@ -153,7 +155,7 @@ void clavier(unsigned char touche,int x,int y)
       glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
       glutPostRedisplay();
       break;
-    case 's' : /* Affichage en mode sommets seuls */
+    case 'e' : /* Affichage en mode sommets seuls */
       glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
       glutPostRedisplay();
       break;
@@ -163,6 +165,14 @@ void clavier(unsigned char touche,int x,int y)
       break;
     case 'D':
       glDisable(GL_DEPTH_TEST);
+      glutPostRedisplay();
+      break;
+    case 'z' :
+      coordY += 0.01;
+      glutPostRedisplay();
+      break;
+    case 's' :
+      coordY -= 0.01;
       glutPostRedisplay();
       break;
     case 'q' : /*la touche 'q' permet de quitter le programme */
