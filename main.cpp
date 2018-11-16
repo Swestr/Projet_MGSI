@@ -15,18 +15,18 @@ Particules p(N);
 /* Création des vents */
 /* (Je ne peut pas passer le vent en paramètre de animation donc les paramètres doivent être globaux) */
 
-std::vector<double> transV1{-10, 1, -10};
-std::vector<double> scaleV1{20, 0.5, 20};
-std::vector<double> vecDirV1{1, 1, 0};
-Voxel *v1 = new Voxel(transV1, scaleV1, vecDirV1);
-// std::vector<double> transV2{-10, 0, -10};
-// std::vector<double> scaleV2{20, 1, 20};
-// std::vector<double> vecDirV2{-5, 2, 1};
-// Voxel *v2 = new Voxel(transV2, scaleV2, vecDirV2);
-// Voxel *voxels[] = {v1, v2};
-// int nbVoxels = 2;
-Voxel *voxels[] = {v1};
-int nbVoxels = 1;
+std::vector<double> p1V1{-10, 0, -10};
+std::vector<double> p2V1{20, 0.4, 20};
+std::vector<double> vecDirV1{0.7, 1, 0};
+Voxel *v1 = new Voxel(p1V1, p2V1, vecDirV1, 1.5);
+//
+std::vector<double> p1V2{-10, 0.65, -10};
+std::vector<double> p2V2{20, 1, 20};
+std::vector<double> vecDirV2{-0.7, 1, 0};
+Voxel *v2 = new Voxel(p1V2, p2V2, vecDirV2, 1.25);
+
+Voxel *voxels[] = {v1, v2};
+int nbVoxels = 2;
 
 /* Prototype des fonctions */
 void affichage();
@@ -80,16 +80,18 @@ void animation()
     vec_dir.push_back(0);
     vec_dir.push_back(0.001);
     vec_dir.push_back(0);
+    double speedCoeff = 1;
     for(int vox = 0; vox < nbVoxels; vox++) {
         if(voxels[vox]->dedans(coordX, coordY, coordZ)){
           vec_dir = voxels[vox]->getVec();
           vec_dir[0] *= 0.001;
           vec_dir[1] *= 0.001;
           vec_dir[2] *= 0.001;
+          speedCoeff = voxels[vox]->getVitesse();
         }
     }
     //Déplacement de la particule
-    p.v[i]->move(vec_dir);
+    p.v[i]->move(vec_dir, speedCoeff);
   }
   glutPostRedisplay();
 }
@@ -106,7 +108,11 @@ void affichage()
   glRotatef(anglex,0.0,1.0,0.0);
   gluLookAt(0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-  //glBegin(GL_POINTS);
+  // for (size_t i = 0; i < nbVoxels; i++) {
+  //   voxels[i]->draw(i, 0, 1);
+  // }
+
+  // glBegin(GL_POINTS);
   for (size_t i = 0; i < N; i++)
   {
     p.v[i]->draw();

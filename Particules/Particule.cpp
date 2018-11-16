@@ -43,13 +43,13 @@ void Particule::print()
 void Particule::draw()
 {
   glPushMatrix();
-  glColor3f(1, 1, 1);
-  glTranslatef(position[0], position[1], position[2]);
-  glutSolidCube(1.0/(n*4));
+    glColor3f(1, 1, 1);
+    glTranslatef(position[0], position[1], position[2]);
+    glutSolidCube(1.0/(n*4));
   glPopMatrix();
 
 }
-void Particule::move(std::vector<double> vect_dir)
+void Particule::move(std::vector<double> vect_dir, double speedCoeff)
 {
   double x = position[0];
   double y = position[1];
@@ -60,7 +60,7 @@ void Particule::move(std::vector<double> vect_dir)
   double bruitY = frand(-0.001, 0.001);
   double bruitZ = frand(-0.001, 0.001);
 
-  position[0] = vect_dir[0]*(float)(vitesse[0]/35) + x + bruitX;
-  position[1] = vect_dir[1]*(float)(vitesse[1]/35) + y + bruitY;
-  position[2] = vect_dir[2]*(float)(vitesse[2]/35) + z + bruitZ;
+  position[0] = vect_dir[0]*(float)(vitesse[0]/35)*speedCoeff + x + bruitX;
+  position[1] = vect_dir[1]*(float)(vitesse[1]/35)*speedCoeff + y + bruitY;
+  position[2] = vect_dir[2]*(float)(vitesse[2]/35)*speedCoeff + z + bruitZ;
 }

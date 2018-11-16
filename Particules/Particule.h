@@ -19,7 +19,7 @@ class Particule
     void print();
     void draw();
     bool dedans(float, float, float);
-    void move(std::vector<double> vect_dir);
+    void move(std::vector<double> vect_dir, double speedCoeff);
 };
 
 #endif

@@ -14,7 +14,6 @@
 #include "Particules/Particule.h"
 #include "Particules/Particules.h"
 #include "Voxels/Voxel.h"
-#include "Voxels/Scale.h"
 
 
 #endif
