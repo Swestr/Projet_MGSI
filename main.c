@@ -7,7 +7,7 @@
 /* inclusion des fichiers d'en-tete freeglut */
 
 #include "header.h"
-#define N 100
+#define N 1000
 char presse;
 int anglex,angley,x,y,xold,yold;
 Particules p(N);
@@ -15,6 +15,7 @@ Particules p(N);
 
 /* Prototype des fonctions */
 void affichage();
+void animation();
 void clavier(unsigned char touche,int x,int y);
 void reshape(int x,int y);
 void mouse(int bouton,int etat,int x,int y);
@@ -39,6 +40,7 @@ int main(int argc,char **argv)
 
   /* enregistrement des fonctions de rappel */
   glutDisplayFunc(affichage);
+  glutIdleFunc(animation);
   glutKeyboardFunc(clavier);
   glutReshapeFunc(reshape);
   glutMouseFunc(mouse);
@@ -49,6 +51,19 @@ int main(int argc,char **argv)
   return 0;
 }
 
+
+void animation()
+{
+  for (size_t i = 0; i < N; i++)
+  {
+    std::vector<double> vec_dir;
+    vec_dir.push_back(0);
+    vec_dir.push_back(0.001);
+    vec_dir.push_back(0);
+    p.v[i]->move(vec_dir);
+  }
+  glutPostRedisplay();
+}
 void affichage()
 {
   /* effacement de l'image avec la couleur de fond */
@@ -88,7 +103,6 @@ void affichage()
   glFlush();
   glutSwapBuffers();
 }
-
 void clavier(unsigned char touche,int x,int y)
 {
   float fraction = 0.1f;
@@ -130,7 +144,6 @@ void reshape(int x,int y)
   else
     glViewport((x-y)/2,0,y,y);
 }
-
 void mouse(int button, int state,int x,int y)
 {
   /* si on appuie sur le bouton gauche */
@@ -144,9 +157,8 @@ void mouse(int button, int state,int x,int y)
   if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
     presse=0; /* le booleen presse passe a 0 (faux) */
 }
-
 void mousemotion(int x,int y)
-  {
+{
     if (presse) /* si le bouton gauche est presse */
     {
       /* on modifie les angles de rotation de l'objet
