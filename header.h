@@ -11,7 +11,10 @@
 #include <cstdlib>
 #include <stdio.h>
 #include <math.h>
-#include "Particule.h"
-#include "Particules.h"
+#include "Particules/Particule.h"
+#include "Particules/Particules.h"
+#include "Voxels/Voxel.h"
+#include "Voxels/Scale.h"
+
 
 #endif
