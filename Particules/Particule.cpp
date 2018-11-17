@@ -15,9 +15,9 @@ Particule::Particule()
 {
   vie = frand(0, 100);
 
-  position.push_back(frand(0.25, 0.75));
+  position.push_back(frand(0, 1));
   position.push_back(frand(0, 0.1));
-  position.push_back(frand(0.25, 0.75));
+  position.push_back(frand(0, 1));
 
   vitesse.push_back(frand(0.25, 1));
   vitesse.push_back(frand(0.25, 1));
@@ -26,8 +26,6 @@ Particule::Particule()
   direction.push_back(0);
   direction.push_back(0.001);
   direction.push_back(0);
-
-  masse = frand(0, 100);
 
   couleur.push_back(frand(0, 1));
   couleur.push_back(frand(0, 1));

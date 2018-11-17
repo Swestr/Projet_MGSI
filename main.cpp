@@ -78,7 +78,8 @@ void animation()
     double coordX = p.v[i]->position[0];
     double coordY = p.v[i]->position[1];
     double coordZ = p.v[i]->position[2];
-    //Recherche du vecteur directeur (de base : (0,0.001,0))
+
+    //Recherche du vecteur directeur (de base : (0,0.001,0)) et de la vitesse du vent
     std::vector<double> vec_dir;
     vec_dir.push_back(0);
     vec_dir.push_back(1);
@@ -148,31 +149,31 @@ void clavier(unsigned char touche,int x,int y)
 
   switch (touche)
     {
-    case 'p': /* affichage du carre plein */
-      glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-      glutPostRedisplay();
-      break;
-    case 'f': /* affichage en mode fil de fer */
-      glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-      glutPostRedisplay();
-      break;
-    case 's' : /* Affichage en mode sommets seuls */
-      glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
-      glutPostRedisplay();
-      break;
-    case 'd':
-      glEnable(GL_DEPTH_TEST);
-      glutPostRedisplay();
-      break;
-    case 'D':
-      glDisable(GL_DEPTH_TEST);
-      glutPostRedisplay();
-      break;
-    case 'Z':
+    // case 'p': /* affichage du carre plein */
+    //   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+    //   glutPostRedisplay();
+    //   break;
+    // case 'f': /* affichage en mode fil de fer */
+    //   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+    //   glutPostRedisplay();
+    //   break;
+    // case 's' : /* Affichage en mode sommets seuls */
+    //   glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
+    //   glutPostRedisplay();
+    //   break;
+    // case 'd':
+    //   glEnable(GL_DEPTH_TEST);
+    //   glutPostRedisplay();
+    //   break;
+    // case 'D':
+    //   glDisable(GL_DEPTH_TEST);
+    //   glutPostRedisplay();
+    //   break;
+    case 'Z': /* Dézoom */
       sca -= 0.01;
       glutPostRedisplay();
       break;
-    case 'z':
+    case 'z': /* Zoom */
       sca += 0.01;
       glutPostRedisplay();
       break;
@@ -182,19 +183,19 @@ void clavier(unsigned char touche,int x,int y)
 }
 void processSpecialKeys(int key, int xx, int yy) {
   switch(key){
-    case GLUT_KEY_UP :
+    case GLUT_KEY_UP : /* la caméra se déplace en haut */
       coordY += 0.05;
       glutPostRedisplay();
       break;
-    case GLUT_KEY_DOWN :
+    case GLUT_KEY_DOWN : /* la caméra se déplace en bas */
       coordY -= 0.05;
       glutPostRedisplay();
       break;
-    case GLUT_KEY_RIGHT :
+    case GLUT_KEY_RIGHT : /* la caméra se déplace autour de la fumée par la droite */
       anglex += 1;
       glutPostRedisplay();
       break;
-    case GLUT_KEY_LEFT :
+    case GLUT_KEY_LEFT :  /* la caméra se déplace autour de la fumée par la gauche */
       anglex -= 1;
       glutPostRedisplay();
       break;
