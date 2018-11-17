@@ -13,19 +13,20 @@ int anglex,angley,x,y,xold,yold;
 Particules p(N);
 
 float coordY = 0.5;
+float sca = 1;
 
 /* Création des vents */
 /* (Je ne peut pas passer le vent en paramètre de animation donc les paramètres doivent être globaux) */
 
 std::vector<double> p1V1{-10, 0.5, -10};
 std::vector<double> p2V1{20, 0.7, 20};
-std::vector<double> vecDirV1{0.7, 1, 0};
-Voxel *v1 = new Voxel(p1V1, p2V1, vecDirV1, 1.5);
+std::vector<double> vecDirV1{1, 1, 0};
+Voxel *v1 = new Voxel(p1V1, p2V1, vecDirV1, 1.4);
 //
 std::vector<double> p1V2{-10, 1, -10};
 std::vector<double> p2V2{20, 1.5, 20};
-std::vector<double> vecDirV2{-0.7, 1, 0};
-Voxel *v2 = new Voxel(p1V2, p2V2, vecDirV2, 1.25);
+std::vector<double> vecDirV2{-1, 1, 0};
+Voxel *v2 = new Voxel(p1V2, p2V2, vecDirV2, 1.5);
 
 Voxel *voxels[] = {v1, v2};
 int nbVoxels = 2;
@@ -80,15 +81,12 @@ void animation()
     //Recherche du vecteur directeur (de base : (0,0.001,0))
     std::vector<double> vec_dir;
     vec_dir.push_back(0);
-    vec_dir.push_back(0.001);
+    vec_dir.push_back(1);
     vec_dir.push_back(0);
     double speedCoeff = 1;
     for(int vox = 0; vox < nbVoxels; vox++) {
         if(voxels[vox]->dedans(coordX, coordY, coordZ)){
           vec_dir = voxels[vox]->getVec();
-          vec_dir[0] *= 0.001;
-          vec_dir[1] *= 0.001;
-          vec_dir[2] *= 0.001;
           speedCoeff = voxels[vox]->getVitesse();
         }
     }
@@ -104,12 +102,13 @@ void affichage()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glShadeModel(GL_SMOOTH);
 
-
   glLoadIdentity();
+  glScalef(sca, sca, sca);
   glRotatef(angley,1.0,0.0,0.0);
   glRotatef(anglex,0.0,1.0,0.0);
   gluLookAt(0.5f, coordY, 0.5f, 0.5f, coordY, 0.0f, 0.0f, 1.0f, 0.0f);
 
+  //Affichage des zones de vents
   // for (size_t i = 0; i < nbVoxels; i++) {
   //   voxels[i]->draw(i, 0, 1);
   // }
@@ -119,24 +118,26 @@ void affichage()
   {
     p.v[i]->draw();
   }
-  //axes
- glBegin(GL_LINES);
-     glColor3f(1.0,0.0,0.0);
-     glVertex3f(0, 0,0.0);
-     glVertex3f(1, 0,0.0);
- glEnd();
- //axe des y en vert
- glBegin(GL_LINES);
-     glColor3f(0.0,1.0,0.0);
-     glVertex3f(0, 0,0.0);
-     glVertex3f(0, 1,0.0);
- glEnd();
- //axe des z en bleu
- glBegin(GL_LINES);
-     glColor3f(0.0,0.0,1.0);
-     glVertex3f(0, 0,0.0);
-     glVertex3f(0, 0,1);
- glEnd();
+
+
+ //  //axes
+ // glBegin(GL_LINES);
+ //     glColor3f(1.0,0.0,0.0);
+ //     glVertex3f(0, 0,0.0);
+ //     glVertex3f(1, 0,0.0);
+ // glEnd();
+ // //axe des y en vert
+ // glBegin(GL_LINES);
+ //     glColor3f(0.0,1.0,0.0);
+ //     glVertex3f(0, 0,0.0);
+ //     glVertex3f(0, 1,0.0);
+ // glEnd();
+ // //axe des z en bleu
+ // glBegin(GL_LINES);
+ //     glColor3f(0.0,0.0,1.0);
+ //     glVertex3f(0, 0,0.0);
+ //     glVertex3f(0, 0,1);
+ // glEnd();
   //On echange les buffers
   glFlush();
   glutSwapBuffers();
@@ -155,7 +156,7 @@ void clavier(unsigned char touche,int x,int y)
       glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
       glutPostRedisplay();
       break;
-    case 'e' : /* Affichage en mode sommets seuls */
+    case 's' : /* Affichage en mode sommets seuls */
       glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
       glutPostRedisplay();
       break;
@@ -167,12 +168,12 @@ void clavier(unsigned char touche,int x,int y)
       glDisable(GL_DEPTH_TEST);
       glutPostRedisplay();
       break;
-    case 'z' :
-      coordY += 0.01;
+    case 'Z':
+      sca -= 0.01;
       glutPostRedisplay();
       break;
-    case 's' :
-      coordY -= 0.01;
+    case 'z':
+      sca += 0.01;
       glutPostRedisplay();
       break;
     case 'q' : /*la touche 'q' permet de quitter le programme */
@@ -180,8 +181,24 @@ void clavier(unsigned char touche,int x,int y)
   	}
 }
 void processSpecialKeys(int key, int xx, int yy) {
-
-
+  switch(key){
+    case GLUT_KEY_UP :
+      coordY += 0.05;
+      glutPostRedisplay();
+      break;
+    case GLUT_KEY_DOWN :
+      coordY -= 0.05;
+      glutPostRedisplay();
+      break;
+    case GLUT_KEY_RIGHT :
+      anglex += 1;
+      glutPostRedisplay();
+      break;
+    case GLUT_KEY_LEFT :
+      anglex -= 1;
+      glutPostRedisplay();
+      break;
+  }
 }
 void reshape(int x,int y)
 {

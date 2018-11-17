@@ -15,17 +15,18 @@ Particule::Particule()
 {
   vie = frand(0, 100);
 
-  position.push_back(frand(0, 1));
+  position.push_back(frand(0.25, 0.75));
   position.push_back(frand(0, 0.1));
-  position.push_back(frand(0, 1));
+  position.push_back(frand(0.25, 0.75));
 
-  vitesse.push_back(frand(15, 50));
-  vitesse.push_back(frand(15, 50));
-  vitesse.push_back(frand(15, 50));
+  vitesse.push_back(frand(0.25, 1));
+  vitesse.push_back(frand(0.25, 1));
+  vitesse.push_back(frand(0.25, 1));
 
-  //direction.push_back(frand(0, 100);
-  //direction.push_back(frand(0, 100);
-  //direction.push_back(frand(0, 100);
+  direction.push_back(0);
+  direction.push_back(0.001);
+  direction.push_back(0);
+
   masse = frand(0, 100);
 
   couleur.push_back(frand(0, 1));
@@ -60,7 +61,17 @@ void Particule::move(std::vector<double> vect_dir, double speedCoeff)
   double bruitY = frand(-0.001, 0.001);
   double bruitZ = frand(-0.001, 0.001);
 
-  position[0] = vect_dir[0]*(float)(vitesse[0]/35)*speedCoeff + x + bruitX;
-  position[1] = vect_dir[1]*(float)(vitesse[1]/35)*speedCoeff + y + bruitY;
-  position[2] = vect_dir[2]*(float)(vitesse[2]/35)*speedCoeff + z + bruitZ;
+  //Pourcentage d'attenuation
+  int attPourc = 99;
+
+  //Nouvelle direction = (proportions de la direction initiale * direction initiale) +
+  //                     (proportion du vecteur directeur * vecteur directeur attenué * vitesse du vent)
+  direction[0] = ((attPourc * direction[0] / 100) + ((100-attPourc) * vect_dir[0] * speedCoeff * 0.001 / 100));
+  direction[1] = ((attPourc * direction[1] / 100) + ((100-attPourc) * vect_dir[1] * speedCoeff * 0.001 / 100));
+  direction[2] = ((attPourc * direction[2] / 100) + ((100-attPourc) * vect_dir[2] * speedCoeff * 0.001 / 100));
+
+  //nouvelle position = direction * vitesse de particule + position + bruit
+  position[0] = direction[0] * (float)(vitesse[0]) + x + bruitX;
+  position[1] = direction[1] * (float)(vitesse[1]) + y + bruitY;
+  position[2] = direction[2] * (float)(vitesse[2]) + z + bruitZ;
 }
