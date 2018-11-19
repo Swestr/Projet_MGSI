@@ -23,6 +23,15 @@ void printGrid()
   }
   printf("\n");
 }
+void printTab(double **tab, int n)
+{
+  for (size_t i = 0; i < n; i++)
+  {
+    for (size_t j = 0; j < n; j++)
+      printf("%.3f ", tab[i][j]);
+  }
+  printf("\n");
+}
 void initGrid()
 {
   double alpha;
@@ -47,7 +56,11 @@ double inter(double d1, double d2, double w)
 {
   return d1 + w * (d2 - d1);
 }
-double max(double tab[N][N], const int n)
+double fade(int x)
+{
+  return 6 * pow(x, 5) - 15 * pow(x, 4) + 10 * pow(x, 3);
+}
+double max(double **tab, const int n)
 {
   double m = -100000;
   for (int i = 0; i < n; i++)
@@ -60,7 +73,7 @@ double max(double tab[N][N], const int n)
   return m;
 }
 
-double min(double tab[N][N], const int n)
+double min(double **tab, const int n)
 {
   double m = 100000;
   for (int i = 0; i < n; i++)
@@ -77,8 +90,8 @@ double perlin(double x, double y)
   int i[2] = {int(x), int(x + 1)};
   int j[2] = {int(y), int(y + 1)};
 
-  double sx = x - i[0];
-  double sy = y - j[0];
+  double sx = fade(x - i[0]);
+  double sy = fade(y - j[0]);
 
   double n[2];
   double ix[2];
@@ -86,57 +99,38 @@ double perlin(double x, double y)
   n[0] = dotGrid(i[0], j[0], x, y);
   n[1] = dotGrid(i[1], j[0], x, y);
   ix[0] = inter(n[0], n[1], sx);
-  // printf("s: %.2f, %.2f\n", sx, sy);
-  // printf("n: %.2f, %.2f\n", n[0], n[1]);
-  // printf("ix: %.2f, %.2f\n", ix[0], ix[1]);
 
   n[0] = dotGrid(i[0], j[1], x, y);
   n[1] = dotGrid(i[1], j[1], x, y);
   ix[1] = inter(n[0], n[1], sx);
 
-  // printf("s: %.2f, %.2f\n", sx, sy);
-  // printf("n: %.2f, %.2f\n", n[0], n[1]);
-  // printf("ix: %.2f, %.2f\n", ix[0], ix[1]);
   return inter(ix[0], ix[1], sy);
 }
 int main(int argc, char const *argv[])
 {
   srand(time(NULL));
   initGrid();
-  printGrid();
-  double tab[N][N];
-  for (size_t i = 1; i <= 10; i++)
+  double tab[N - 1][N - 1];
+  for (size_t i = 0; i < N - 1; i++)
   {
-    for (size_t j = 1; j <= 10; j++)
-    {
-      tab[i - 1][j - 1] = perlin((double)i / 10, (double)j / 10);
-      printf("%f ", tab[i - 1][j - 1]);
-    }
-    printf("\n");
+    for (size_t j = 0; j < N - 1; j++)
+      tab[i][j] = perlin((double)i + 0.5, (double)j + 0.5);
   }
-  double vmax = max(tab, N);
-  double vmin = min(tab, N);
-  printf("\n");
+  double *p_tab[N - 1];
+  for (size_t i = 0; i < N - 1; i++)
+    p_tab[i] = tab[i];
 
-  for (size_t i = 1; i <= 10; i++)
+   double vmax = max(p_tab, N - 1);
+   double vmin = min(p_tab, N - 1);
+
+  for (size_t i = 0; i < N - 1; i++)
   {
-    for (size_t j = 1; j <= 10; j++)
-    {
-      tab[i - 1][j - 1] = (tab[i - 1][j - 1] - vmin)/(vmax - vmin);
-      printf("%f ", tab[i - 1][j - 1]);
-    }
-    printf("\n");
+   for (size_t j = 0; j < N - 1; j++)
+      tab[i][j] = (tab[i][j] - vmin)/(vmax - vmin);
   }
+  for (size_t i = 0; i < N - 1; i++)
+    p_tab[i] = tab[i];
+
+  printTab(p_tab, N - 1);
   return 0;
 }
-
-// 3.4, 7.6
-// x' = [3, 4]
-// y' = [7, 8]
-// sx = 3.4 - 3 = 0.4
-// sy = 7.6 - 7 = 0.6
-//n0 = dotGrad(3, 4, 3.4, 7.6) = (3.4 - 3 * )
-// 0.4 * grid[7][3].x + 0.6 * grid[7][3].y;
-// -0.6 * grid[7][4].x - 0.4 * grid[7][4].y;
-// -0.6 * grid[7][4].x - 0.4 * grid[7][4].y;
-// 0.4 * grid[7][4].x + 0.6 * grid[7][4].y;
