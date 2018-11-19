@@ -1,0 +1,13 @@
+#ifndef PATRICULES_H
+#define PATRICULES_H
+
+#include <vector>
+
+class Particules
+{
+  public:
+    std::vector<Particule*> v;
+    Particules(int);
+};
+
+#endif

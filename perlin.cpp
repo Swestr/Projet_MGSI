@@ -1,4 +1,9 @@
+#include "header.h"
+
+#define N 50
+
 using namespace std;
+vector <double> grid[N][N];
 
 double frand(double dmin, double dmax)
 {
@@ -14,7 +19,7 @@ void printGrid()
   }
   printf("\n");
 }
-void printTab(double **tab, int n)
+void printTab(double **tab, const int n)
 {
   for (size_t i = 0; i < n; i++)
   {
@@ -23,11 +28,9 @@ void printTab(double **tab, int n)
   }
   printf("\n");
 }
-void initGrid(const int N)
+void initGrid()
 {
   double alpha;
-  vector<double> **grid = (vector<double>**)malloc(sizeof(vector<double>*) * N);
-
   for (size_t i = 0; i < N; i++)
   {
     for (size_t j = 0; j < N; j++)
@@ -99,10 +102,9 @@ double perlin(double x, double y)
 
   return inter(ix[0], ix[1], sy);
 }
-double **perlin2D(int N)
+double **perlin2D()
 {
-  srand(time(NULL));
-  initGrid(N);
+  initGrid();
   double tab[N - 1][N - 1];
   for (size_t i = 0; i < N - 1; i++)
   {
@@ -124,5 +126,11 @@ double **perlin2D(int N)
   for (size_t i = 0; i < N - 1; i++)
     p_tab[i] = tab[i];
 
-  return p_tab;
+  double **res = (double**)malloc(sizeof(double*) * N - 1);
+  for (size_t i = 0; i < N - 1; i++)
+  {
+    res[i] = (double*)malloc(sizeof(double) * N - 1);
+    res[i] = p_tab[i];
+  }
+  return res;
 }

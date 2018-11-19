@@ -7,6 +7,7 @@
 /* inclusion des fichiers d'en-tete freeglut */
 
 #include "header.h"
+
 #define N 1000
 char presse;
 int anglex,angley,x,y,xold,yold;
@@ -116,9 +117,7 @@ void affichage()
 
   // glBegin(GL_POINTS);
   for (size_t i = 0; i < N; i++)
-  {
     p.v[i]->draw();
-  }
 
 
  //  //axes

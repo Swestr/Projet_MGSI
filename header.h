@@ -2,18 +2,24 @@
 #define HEADER_H
 
 #ifdef __APPLE__
-
 #include <GLUT/glut.h> /* Pour Mac OS X */
 #else
 #include <GL/glut.h>   /* Pour les autres systemes */
 #endif
 
-#include <cstdlib>
+#include "Class/Particule.h"
+#include "Class/Particules.h"
+#include "Class/Voxel.h"
+#include "Class/perlin.h"
+
 #include <stdio.h>
 #include <math.h>
-#include "Particules/Particule.h"
-#include "Particules/Particules.h"
-#include "Voxels/Voxel.h"
+#include <stdlib.h>
+#include <time.h>
 
+#include <vector>
+#include <cstdlib>
+#include <string>
+#include <iostream>
 
 #endif
