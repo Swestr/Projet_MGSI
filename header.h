@@ -9,8 +9,10 @@
 
 #include "Class/Particule.h"
 #include "Class/Particules.h"
-#include "Class/Voxel.h"
-#include "Class/perlin.h"
+#include "Class/Vent.h"
+#include "Class/Perlin.h"
+#include "Class/Obstacle.h"
+#include "Class/Sphere.h"
 
 #include <stdio.h>
 #include <math.h>

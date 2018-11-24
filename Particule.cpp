@@ -46,9 +46,9 @@ void Particule::move(std::vector<double> vect_dir, double speedCoeff)
   double z = position[2];
 
   //Il faudra ajouter le bruit de Perlin
-  double bruitX = frand(-0.001, 0.001);
-  double bruitY = frand(-0.001, 0.001);
-  double bruitZ = frand(-0.001, 0.001);
+  double bruitX = 0;//frand(-0.001, 0.001);
+  double bruitY = 0;//frand(-0.001, 0.001);
+  double bruitZ = 0;//frand(-0.001, 0.001);
 
   //Pourcentage d'attenuation
   int attPourc = 99;
