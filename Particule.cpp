@@ -4,11 +4,14 @@ using namespace std;
 
 Particule::Particule()
 {
-  vie = frand(0, 100);
+  vie = frand(150, 8000);
 
   position.push_back(frand(0, 1));
-  position.push_back(frand(0, 0.1));
-  position.push_back(frand(0, 1));
+  position.push_back(0);
+  position.push_back(0.5);
+  // position.push_back(frand(0, 1));
+  // position.push_back(frand(-0.1, 0.1));
+  // position.push_back(frand(0, 1));
 
   vitesse.push_back(frand(0.25, 1));
   vitesse.push_back(frand(0.25, 1));
@@ -41,6 +44,8 @@ void Particule::draw()
 }
 void Particule::move(std::vector<double> vect_dir, double speedCoeff)
 {
+  vie--;
+
   double x = position[0];
   double y = position[1];
   double z = position[2];

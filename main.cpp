@@ -8,7 +8,7 @@
 
 #include "header.h"
 
-#define N 1000
+#define N 2000
 char presse;
 int anglex,angley,x,y,xold,yold;
 Particules p(N);
@@ -34,7 +34,8 @@ std::vector<double> vecDirV2{-1, 1, 0};
 Vent *v2 = new Vent(p1V2, p2V2, vecDirV2, 1.5);
 
 Vent *vents[] = {v1, v2};
-int nbVents = 2;
+// int nbVents = 2;
+int nbVents = 0;
 
 /* Création obstacle */
 
@@ -86,6 +87,9 @@ void animation()
   if(!pause){
     for (int i = 0; i < N; i++)
     {
+      if(p.v[i]->vie <= 0){
+        p.v[i] = new Particule();
+      }
       //Les coordonnés de la particule
       double coordX = p.v[i]->position[0];
       double coordY = p.v[i]->position[1];
@@ -168,7 +172,7 @@ void clavier(unsigned char touche,int x,int y)
       glutPostRedisplay();
       break;
     case 'R' : /* Réinitialisation */
-      pause = false;
+      // pause = false;
       p.reinitialize(N);
       glutPostRedisplay();
       break;
