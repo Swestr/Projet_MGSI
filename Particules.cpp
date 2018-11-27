@@ -9,8 +9,6 @@ Particules::Particules(int n)
     v.push_back(new Particule());
   }
 }
-
-
 void Particules::reinitialize(int n)
 {
   v.clear();

@@ -19,12 +19,12 @@ class Vent
     //vecteur directeur dans le voxel
     std::vector<double> vecDir;
 
-    Vent(std::vector<double> pt1, std::vector<double> pt2, std::vector<double> vdir, double speed);
+    Vent(std::vector<double>, std::vector<double>, std::vector<double>, double);
     std::vector<double> getVec();
     double getVitesse();
-    bool dedans(float x, float y, float z);
-    double max(double i, double j);
-    double min(double i, double j);
-    void draw(int r, int g, int b);
+    bool dedans(float, float, float);
+    double max(double, double);
+    double min(double, double);
+    void draw(float, float, float);
 };
 #endif

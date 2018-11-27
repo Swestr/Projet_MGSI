@@ -17,14 +17,11 @@ Particule::Particule()
   vitesse.push_back(frand(0.25, 1));
   vitesse.push_back(frand(0.25, 1));
 
+  r = 1;
+
   direction.push_back(0);
   direction.push_back(0.001);
   direction.push_back(0);
-
-  couleur.push_back(frand(0, 1));
-  couleur.push_back(frand(0, 1));
-  couleur.push_back(frand(0, 1));
-  couleur.push_back(frand(0, 1));
 
   densite = frand(0, 100);
 }
@@ -36,19 +33,15 @@ void Particule::print()
 void Particule::draw()
 {
   glPushMatrix();
-    glColor3f(1, 1, 1);
+    glColor3f(r, 1, 1);
     glTranslatef(position[0], position[1], position[2]);
     glutSolidCube(1.0/(n*4));
   glPopMatrix();
 
 }
-void Particule::move(std::vector<double> vect_dir, double speedCoeff)
+std::vector<double> Particule::nextPosition(std::vector<double> vect_dir, double speedCoeff)
 {
-  vie--;
-
-  double x = position[0];
-  double y = position[1];
-  double z = position[2];
+  std::vector<double> newPosition;
 
   //Il faudra ajouter le bruit de Perlin
   double bruitX = 0;//frand(-0.001, 0.001);
@@ -64,8 +57,24 @@ void Particule::move(std::vector<double> vect_dir, double speedCoeff)
   direction[1] = ((attPourc * direction[1] / 100) + ((100-attPourc) * vect_dir[1] * speedCoeff * 0.001 / 100));
   direction[2] = ((attPourc * direction[2] / 100) + ((100-attPourc) * vect_dir[2] * speedCoeff * 0.001 / 100));
 
-  //nouvelle position = direction * vitesse de particule + position + bruit
-  position[0] = direction[0] * (float)(vitesse[0]) + x + bruitX;
-  position[1] = direction[1] * (float)(vitesse[1]) + y + bruitY;
-  position[2] = direction[2] * (float)(vitesse[2]) + z + bruitZ;
+  //nouvelle position = position + direction * vitesse de particule + bruit
+  newPosition.push_back(position[0] + direction[0] * (float)(vitesse[0]) + bruitX);
+  newPosition.push_back(position[1] + direction[1] * (float)(vitesse[1]) + bruitY);
+  newPosition.push_back(position[2] + direction[2] * (float)(vitesse[2]) + bruitZ);
+
+  return newPosition;
+}
+void Particule::move(std::vector<double> vect_dir, double speedCoeff)
+{
+  vie--;
+  std::vector<double> newPosition = nextPosition(vect_dir, speedCoeff);
+  position[0] = newPosition[0];
+  position[1] = newPosition[1];
+  position[2] = newPosition[2];
+}
+void Particule::force_move(std::vector<double> vec_dir)
+{
+  position[0] += vec_dir[0] * 0.001;
+  position[1] += vec_dir[1] * 0.001;
+  position[2] += vec_dir[2] * 0.001;
 }

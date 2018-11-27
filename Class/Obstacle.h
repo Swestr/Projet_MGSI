@@ -8,9 +8,9 @@
 class Obstacle
 {
   public:
-    std::vector<double> normer(double x, double y, double z);
-    virtual std::vector<double> getTangente(std::vector<double> part, std::vector<double> I)=0;
-    virtual bool dedans(float x, float y, float z)=0;
-    virtual void draw(int r, int g, int b)=0;
+    std::vector<double> normer(double, double, double);
+    virtual std::vector<double> getTangente(std::vector<double>, std::vector<double>)=0;
+    virtual bool dedans(float, float, float)=0;
+    virtual void draw(float, float, float)=0;
 };
 #endif

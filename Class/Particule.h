@@ -10,6 +10,7 @@ class Particule
     double vie;
     double masse;
     double densite;
+    double r;
     std::vector<double> position;
     std::vector<double> vitesse;
     std::vector<double> direction;
@@ -18,7 +19,9 @@ class Particule
     void print();
     void draw();
     bool dedans(float, float, float);
-    void move(std::vector<double> vect_dir, double speedCoeff);
+    void move(std::vector<double>, double);
+    std::vector<double> nextPosition(std::vector<double>, double);
+    void force_move(std::vector<double>);
 };
 
 #endif

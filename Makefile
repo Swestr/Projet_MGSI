@@ -1,7 +1,7 @@
 CC=g++
 LIBFLAGS=-lGL -lGLU -lglut
 EXEC=particules
-SRC=main.cpp Vent.cpp Particules.cpp Particule.cpp Perlin.cpp Obstacle.cpp Sphere.cpp
+SRC=main.cpp Vent.cpp Particules.cpp Particule.cpp Perlin.cpp Obstacle.cpp Sphere.cpp Parallelepipede.cpp
 
 all: $(EXEC)
 

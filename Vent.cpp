@@ -37,7 +37,7 @@ double Vent::min(double i, double j)
 {
   return i > j ? j : i;
 }
-void Vent::draw(int r, int g, int b)
+void Vent::draw(float r, float g, float b)
 {
   double minX = min(point1[0], point2[0]);
   double maxX = max(point1[0], point2[0]);

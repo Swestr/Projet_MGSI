@@ -35,15 +35,23 @@ Vent *v2 = new Vent(p1V2, p2V2, vecDirV2, 1.5);
 
 Vent *vents[] = {v1, v2};
 // int nbVents = 2;
-int nbVents = 0;
+int nbVents = 2;
 
 /* Création obstacle */
 
-std::vector<double> centre{0.5,1,0.5};
-float rayon = 0.5;
-Obstacle *s1 = new Sphere(centre, rayon);
+
+std::vector<double> centre{0.5,0.5,0.5};
+std::vector<double> rotation{0, 0, 45};
+// std::vector<double> rotation{0, 0, 0};
+Obstacle *s1 = new Parallelepipede(centre, rotation, 0.75, 0.5, 0.25);
 Obstacle *obstacles[] = {s1};
 int nbObstaces = 1;
+
+// std::vector<double> centre{0.5,1,0.5};
+// float rayon = 0.5;
+// Obstacle *s1 = new Sphere(centre, rayon);
+// Obstacle *obstacles[] = {s1};
+// int nbObstaces = 1;
 
 /* Prototype des fonctions */
 void affichage();
@@ -101,22 +109,35 @@ void animation()
       vec_dir.push_back(1);
       vec_dir.push_back(0);
       double speedCoeff = 1;
-      for(int vox = 0; vox < nbVents; vox++) {
-          if(vents[vox]->dedans(coordX, coordY, coordZ)){
-            vec_dir = vents[vox]->getVec();
-            speedCoeff = vents[vox]->getVitesse();
-          }
-      }
+
+      //Recherche des obstacles
+      bool leave = false;
       for(int obs = 0; obs < nbObstaces; obs++){
         Obstacle *obst = obstacles[obs];
-        if(obst->dedans(coordX, coordY, coordZ)){
+        std::vector<double> nextPosition = p.v[i]->nextPosition(vec_dir, speedCoeff);
+        if(obst->dedans(nextPosition[0], nextPosition[1], nextPosition[2])){
           vec_dir = obst->getTangente(p.v[i]->position, p.v[i]->direction);
+          p.v[i]->r = 0;
+          p.v[i]->force_move(vec_dir);
+          leave = true;
+          continue;
+        }
+      }
+      if(leave) continue;
+
+      p.v[i]->r = 1;
+      //Recherche des vents
+      for(int vox = 0; vox < nbVents; vox++) {
+        if(vents[vox]->dedans(coordX, coordY, coordZ)){
+          vec_dir = vents[vox]->getVec();
+          speedCoeff = vents[vox]->getVitesse();
         }
       }
 
       //Déplacement de la particule
       p.v[i]->move(vec_dir, speedCoeff);
     }
+
     glutPostRedisplay();
     if(pas){
       pas = false;

@@ -13,6 +13,7 @@
 #include "Class/Perlin.h"
 #include "Class/Obstacle.h"
 #include "Class/Sphere.h"
+#include "Class/Parallelepipede.h"
 
 #include <stdio.h>
 #include <math.h>
