@@ -16,21 +16,41 @@ Particules p(N);
 float coordY = 0.5;
 float sca = 1;
 
+bool obstacle = true;
+bool pause = false;
+bool pas = false;
+
 /* Création des vents */
 /* (Je ne peut pas passer le vent en paramètre de animation donc les paramètres doivent être globaux) */
 
 std::vector<double> p1V1{-10, 0.5, -10};
 std::vector<double> p2V1{20, 0.7, 20};
 std::vector<double> vecDirV1{1, 1, 0};
-Voxel *v1 = new Voxel(p1V1, p2V1, vecDirV1, 1.4);
+Vent *v1 = new Vent(p1V1, p2V1, vecDirV1, 1.4);
 //
 std::vector<double> p1V2{-10, 1, -10};
 std::vector<double> p2V2{20, 1.5, 20};
 std::vector<double> vecDirV2{-1, 1, 0};
-Voxel *v2 = new Voxel(p1V2, p2V2, vecDirV2, 1.5);
+Vent *v2 = new Vent(p1V2, p2V2, vecDirV2, 1.5);
 
-Voxel *voxels[] = {v1, v2};
-int nbVoxels = 2;
+Vent *vents[] = {v1, v2};
+int nbVents = 2;
+
+/* Création obstacle */
+
+
+std::vector<double> translation{0.5, 0.5, 0.5};
+std::vector<double> rotation{0., 0., 45.};
+std::vector<double> scale{0.75, 0.25, 1};
+Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
+Obstacle *obstacles[] = {s1};
+int nbObstaces = 1;
+
+// std::vector<double> centre{0.5,1,0.5};
+// float rayon = 0.5;
+// Obstacle *s1 = new Sphere(centre, rayon);
+// Obstacle *obstacles[] = {s1};
+// int nbObstaces = 1;
 
 /* Prototype des fonctions */
 void affichage();
@@ -70,33 +90,62 @@ int main(int argc,char **argv)
   glutMainLoop();
   return 0;
 }
-
-
 void animation()
 {
-  for (int i = 0; i < N; i++)
-  {
-    //Les coordonnés de la particule
-    double coordX = p.v[i]->position[0];
-    double coordY = p.v[i]->position[1];
-    double coordZ = p.v[i]->position[2];
+  if(!pause){
+    for (int i = 0; i < N; i++)
+    {
+      if(p.v[i]->vie <= 0){
+        p.v[i] = new Particule();
+      }
+      //Les coordonnés de la particule
+      double coordX = p.v[i]->position[0];
+      double coordY = p.v[i]->position[1];
+      double coordZ = p.v[i]->position[2];
 
-    //Recherche du vecteur directeur (de base : (0,0.001,0)) et de la vitesse du vent
-    std::vector<double> vec_dir;
-    vec_dir.push_back(0);
-    vec_dir.push_back(1);
-    vec_dir.push_back(0);
-    double speedCoeff = 1;
-    for(int vox = 0; vox < nbVoxels; vox++) {
-        if(voxels[vox]->dedans(coordX, coordY, coordZ)){
-          vec_dir = voxels[vox]->getVec();
-          speedCoeff = voxels[vox]->getVitesse();
+      //Recherche du vecteur directeur (de base : (0,0.001,0)) et de la vitesse du vent
+      std::vector<double> vec_dir;
+      vec_dir.push_back(0);
+      vec_dir.push_back(1);
+      vec_dir.push_back(0);
+      double speedCoeff = 1;
+
+      //Recherche des obstacles
+      bool leave = false;
+      for(int obs = 0; obs < nbObstaces; obs++){
+        Obstacle *obst = obstacles[obs];
+        std::vector<double> nextPosition = p.v[i]->nextPosition(vec_dir, speedCoeff);
+        if(obst->dedans(nextPosition[0], nextPosition[1], nextPosition[2])){
+          vec_dir = obst->getTangente(p.v[i]->position, p.v[i]->direction);
+          p.v[i]->r = 0;
+          p.v[i]->g = 0;
+          p.v[i]->force_move(vec_dir);
+          leave = true;
+          continue;
         }
+      }
+      if(leave) continue;
+
+      p.v[i]->r = 1;
+      p.v[i]->g = 1;
+      //Recherche des vents
+      for(int vox = 0; vox < nbVents; vox++) {
+        if(vents[vox]->dedans(coordX, coordY, coordZ)){
+          vec_dir = vents[vox]->getVec();
+          speedCoeff = vents[vox]->getVitesse();
+        }
+      }
+
+      //Déplacement de la particule
+      p.v[i]->move(vec_dir, speedCoeff);
     }
-    //Déplacement de la particule
-    p.v[i]->move(vec_dir, speedCoeff);
+
+    glutPostRedisplay();
+    if(pas){
+      pas = false;
+      pause = true;
+    }
   }
-  glutPostRedisplay();
 }
 void affichagePerlin()
 {
@@ -151,11 +200,23 @@ void affichage()
   glRotatef(anglex,0.0,1.0,0.0);
   gluLookAt(0.5f, coordY, 0.5f, 0.5f, coordY, 0.0f, 0.0f, 1.0f, 0.0f);
 
+
+  //Affichage de(s) l'obstacle
+  if(obstacle){
+    for(int obs = 0; obs < nbObstaces; obs++){
+      obstacles[obs]->draw(0,0,1);
+    }
+  }
+  glColor3f(1, 0, 0);
+  glutSolidSphere(0.01, 10, 10);
+  glColor3f(1, 1, 1);
+
   //Affichage des zones de vents
-  // for (size_t i = 0; i < nbVoxels; i++) {
-  //   voxels[i]->draw(i, 0, 1);
+  // for (size_t i = 0; i < nbVents; i++) {
+  //   vents[i]->draw(i, 0, 1);
   // }
 
+<<<<<<< HEAD
   glBegin(GL_POINTS);
   glColor3f(1, 1, 1);
   for (size_t i = 0; i < NP; i++)
@@ -187,36 +248,37 @@ void affichage()
      glVertex3f(0, 0,0.0);
      glVertex3f(0, 0,1);
  glEnd();
+=======
+  for (size_t i = 0; i < N; i++)
+    p.v[i]->draw();
+
+>>>>>>> 9ab74e366c5f614542d0912c1970faace2303d4b
   //On echange les buffers
   glFlush();
   glutSwapBuffers();
 }
 void clavier(unsigned char touche,int x,int y)
 {
-  float fraction = 0.1f;
 
   switch (touche)
     {
-    // case 'p': /* affichage du carre plein */
-    //   glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    //   glutPostRedisplay();
-    //   break;
-    // case 'f': /* affichage en mode fil de fer */
-    //   glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-    //   glutPostRedisplay();
-    //   break;
-    // case 's' : /* Affichage en mode sommets seuls */
-    //   glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
-    //   glutPostRedisplay();
-    //   break;
-    // case 'd':
-    //   glEnable(GL_DEPTH_TEST);
-    //   glutPostRedisplay();
-    //   break;
-    // case 'D':
-    //   glDisable(GL_DEPTH_TEST);
-    //   glutPostRedisplay();
-    //   break;
+    case 'C' : /* Pas à pas */
+      pas = true;
+      pause = false;
+      glutPostRedisplay();
+      break;
+    case 'O' : /* Afficher ou non les obstacless */
+      obstacle = !obstacle;
+      glutPostRedisplay();
+      break;
+    case 'R' : /* Réinitialisation */
+      // pause = false;
+      p.reinitialize(N);
+      glutPostRedisplay();
+      break;
+    case 'P' : /* Pause */
+      pause = !pause;
+      break;
     case 'Z': /* Dézoom */
       sca -= 0.01;
       glutPostRedisplay();

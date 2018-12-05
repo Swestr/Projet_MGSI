@@ -8,6 +8,7 @@ class Particules
   public:
     std::vector<Particule*> v;
     Particules(int);
+    void reinitialize(int);
 };
 
 #endif
