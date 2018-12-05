@@ -7,6 +7,9 @@
 #include <GL/glut.h>   /* Pour les autres systemes */
 #endif
 
+#define NC 10
+#define NP 100
+
 #include "Class/Particule.h"
 #include "Class/Particules.h"
 #include "Class/Voxel.h"

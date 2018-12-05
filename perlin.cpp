@@ -1,9 +1,7 @@
 #include "header.h"
 
-#define N 50
-
 using namespace std;
-vector <double> grid[N][N];
+vector <double> grid[NC][NC];
 
 double frand(double dmin, double dmax)
 {
@@ -12,9 +10,9 @@ double frand(double dmin, double dmax)
 }
 void printGrid()
 {
-  for (size_t i = 0; i < N; i++)
+  for (size_t i = 0; i < NC; i++)
   {
-    for (size_t j = 0; j < N; j++)
+    for (size_t j = 0; j < NC; j++)
       printf("[%f, %f] ", grid[i][j][0], grid[i][j][1]);
   }
   printf("\n");
@@ -31,9 +29,9 @@ void printTab(double **tab, const int n)
 void initGrid()
 {
   double alpha;
-  for (size_t i = 0; i < N; i++)
+  for (size_t i = 0; i < NC; i++)
   {
-    for (size_t j = 0; j < N; j++)
+    for (size_t j = 0; j < NC; j++)
     {
       alpha = frand(0, 2 * M_PI);
       grid[i][j].push_back(cos(alpha));
@@ -81,13 +79,17 @@ double min(double **tab, const int n)
   }
   return m;
 }
+double range(double x, double vmin, double vmax)
+{
+  return (x - vmin)/(vmax - vmin);
+}
 double perlin(double x, double y)
 {
   int i[2] = {int(x), int(x + 1)};
   int j[2] = {int(y), int(y + 1)};
 
-  double sx = fade(x - i[0]);
-  double sy = fade(y - j[0]);
+  double sx = x - i[0];
+  double sy = y - j[0];
 
   double n[2];
   double ix[2];
@@ -101,36 +103,4 @@ double perlin(double x, double y)
   ix[1] = inter(n[0], n[1], sx);
 
   return inter(ix[0], ix[1], sy);
-}
-double **perlin2D()
-{
-  initGrid();
-  double tab[N - 1][N - 1];
-  for (size_t i = 0; i < N - 1; i++)
-  {
-    for (size_t j = 0; j < N - 1; j++)
-      tab[i][j] = perlin((double)i + 0.5, (double)j + 0.5);
-  }
-  double *p_tab[N - 1];
-  for (size_t i = 0; i < N - 1; i++)
-    p_tab[i] = tab[i];
-
-   double vmax = max(p_tab, N - 1);
-   double vmin = min(p_tab, N - 1);
-
-  for (size_t i = 0; i < N - 1; i++)
-  {
-   for (size_t j = 0; j < N - 1; j++)
-      tab[i][j] = (tab[i][j] - vmin)/(vmax - vmin);
-  }
-  for (size_t i = 0; i < N - 1; i++)
-    p_tab[i] = tab[i];
-
-  double **res = (double**)malloc(sizeof(double*) * N - 1);
-  for (size_t i = 0; i < N - 1; i++)
-  {
-    res[i] = (double*)malloc(sizeof(double) * N - 1);
-    res[i] = p_tab[i];
-  }
-  return res;
 }

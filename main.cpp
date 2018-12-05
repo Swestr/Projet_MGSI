@@ -8,7 +8,7 @@
 
 #include "header.h"
 
-#define N 1000
+#define N 50
 char presse;
 int anglex,angley,x,y,xold,yold;
 Particules p(N);
@@ -66,6 +66,7 @@ int main(int argc,char **argv)
   glutMotionFunc(mousemotion);
   glutSpecialFunc(processSpecialKeys);
   /* Entree dans la boucle principale glut */
+  initGrid();
   glutMainLoop();
   return 0;
 }
@@ -97,6 +98,46 @@ void animation()
   }
   glutPostRedisplay();
 }
+void affichagePerlin()
+{
+  double **d;
+  double w = ceil((double)NP / NC);
+  double v = (double)NC / (NP * 2);
+
+  double di = v;
+  double dj = v;
+  d = (double**)malloc(sizeof(double*) * NP);
+  for (size_t i = 0; i < NP - w; i++)
+  {
+     dj = v;
+     d[i] = (double*)malloc(sizeof(double) * NP);
+     for (size_t j = 0; j < NP - w; j++)
+     {
+       printf("%.2f %.2f %li %li\n", (double)di, (double)dj, i, j);
+       d[i][j] = perlin((double)di, (double)dj);
+       dj += v * 2;
+     }
+     di += v * 2;
+  }
+  double vmin = min(d, NP - w);
+  double vmax = max(d, NP - w);
+  di = v;
+  dj = v;
+  glBegin(GL_POINTS);
+  glColor3f(1, 1, 1);
+  for (size_t i = 0; i < NP - w; i++)
+  {
+    dj = v;
+    for (size_t j = 0; j < NP - w; j++)
+    {
+      d[i][j] = range(d[i][j], vmin, vmax);
+      glVertex3f(di / NC, d[i][j], dj / NC);
+      dj += v * 2;
+    }
+    di += v * 2;
+  }
+  glEnd();
+}
 void affichage()
 {
 
@@ -115,29 +156,37 @@ void affichage()
   //   voxels[i]->draw(i, 0, 1);
   // }
 
-  // glBegin(GL_POINTS);
-  for (size_t i = 0; i < N; i++)
-    p.v[i]->draw();
+  glBegin(GL_POINTS);
+  glColor3f(1, 1, 1);
+  for (size_t i = 0; i < NP; i++)
+  {
+    glVertex3f(
+      perlin(frand(-9, 9), frand(-9, 9)),
+      perlin(frand(-9, 9), frand(-9, 9)),
+      perlin(frand(-9, 9), frand(-9, 9))
+    );
+  }
+  glEnd();
 
-
- //  //axes
- // glBegin(GL_LINES);
- //     glColor3f(1.0,0.0,0.0);
- //     glVertex3f(0, 0,0.0);
- //     glVertex3f(1, 0,0.0);
- // glEnd();
- // //axe des y en vert
- // glBegin(GL_LINES);
- //     glColor3f(0.0,1.0,0.0);
- //     glVertex3f(0, 0,0.0);
- //     glVertex3f(0, 1,0.0);
- // glEnd();
- // //axe des z en bleu
- // glBegin(GL_LINES);
- //     glColor3f(0.0,0.0,1.0);
- //     glVertex3f(0, 0,0.0);
- //     glVertex3f(0, 0,1);
- // glEnd();
+  // affichagePerlin();
+  //axes
+ glBegin(GL_LINES);
+     glColor3f(1.0,0.0,0.0);
+     glVertex3f(0, 0,0.0);
+     glVertex3f(1, 0,0.0);
+ glEnd();
+ //axe des y en vert
+ glBegin(GL_LINES);
+     glColor3f(0.0,1.0,0.0);
+     glVertex3f(0, 0,0.0);
+     glVertex3f(0, 1,0.0);
+ glEnd();
+ //axe des z en bleu
+ glBegin(GL_LINES);
+     glColor3f(0.0,0.0,1.0);
+     glVertex3f(0, 0,0.0);
+     glVertex3f(0, 0,1);
+ glEnd();
   //On echange les buffers
   glFlush();
   glutSwapBuffers();
