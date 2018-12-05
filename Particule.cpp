@@ -18,6 +18,8 @@ Particule::Particule()
   vitesse.push_back(frand(0.25, 1));
 
   r = 1;
+  g = 1;
+  b = 1;
 
   direction.push_back(0);
   direction.push_back(0.001);
@@ -33,7 +35,7 @@ void Particule::print()
 void Particule::draw()
 {
   glPushMatrix();
-    glColor3f(r, 1, 1);
+    glColor3f(r, g, b);
     glTranslatef(position[0], position[1], position[2]);
     glutSolidCube(1.0/(n*4));
   glPopMatrix();

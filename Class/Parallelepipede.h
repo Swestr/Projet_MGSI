@@ -3,18 +3,19 @@
 class Parallelepipede : public Obstacle
 {
   public:
-    std::vector<double> centre;
+    std::vector<double> translate;
     std::vector<double> rotation;
-    double longueur;
-    double largeur;
-    double hauteur;
-    //Rotation en x, y, et z (vecteur 3D)
+    std::vector<double> scale;
 
-    Parallelepipede(std::vector<double>, std::vector<double>, double, double, double);
+    Parallelepipede(std::vector<double>, std::vector<double>, std::vector<double>);
     bool dedans_noRotate(float, float, float);
     std::vector<double> getTangente(std::vector<double>, std::vector<double>);
     bool dedans(float, float, float);
     void draw(float, float, float);
+    bool translating(float, float, float);
+    bool rotate(float, float, float);
+    bool scaling(float, float, float);
+    bool unitaire(float, float, float);
 };
 
 #endif

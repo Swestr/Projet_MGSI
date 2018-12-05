@@ -11,6 +11,8 @@ class Particule
     double masse;
     double densite;
     double r;
+    double g;
+    double b;
     std::vector<double> position;
     std::vector<double> vitesse;
     std::vector<double> direction;

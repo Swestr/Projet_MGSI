@@ -8,7 +8,7 @@
 
 #include "header.h"
 
-#define N 2000
+#define N 100
 char presse;
 int anglex,angley,x,y,xold,yold;
 Particules p(N);
@@ -34,16 +34,15 @@ std::vector<double> vecDirV2{-1, 1, 0};
 Vent *v2 = new Vent(p1V2, p2V2, vecDirV2, 1.5);
 
 Vent *vents[] = {v1, v2};
-// int nbVents = 2;
 int nbVents = 2;
 
 /* Création obstacle */
 
 
-std::vector<double> centre{0.5,0.5,0.5};
-std::vector<double> rotation{0, 0, 45};
-// std::vector<double> rotation{0, 0, 0};
-Obstacle *s1 = new Parallelepipede(centre, rotation, 0.75, 0.5, 0.25);
+std::vector<double> translation{0.5, 0.5, 0.5};
+std::vector<double> rotation{0., 0., 45.};
+std::vector<double> scale{0.75, 0.25, 1};
+Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
 Obstacle *obstacles[] = {s1};
 int nbObstaces = 1;
 
@@ -118,6 +117,7 @@ void animation()
         if(obst->dedans(nextPosition[0], nextPosition[1], nextPosition[2])){
           vec_dir = obst->getTangente(p.v[i]->position, p.v[i]->direction);
           p.v[i]->r = 0;
+          p.v[i]->g = 0;
           p.v[i]->force_move(vec_dir);
           leave = true;
           continue;
@@ -126,6 +126,7 @@ void animation()
       if(leave) continue;
 
       p.v[i]->r = 1;
+      p.v[i]->g = 1;
       //Recherche des vents
       for(int vox = 0; vox < nbVents; vox++) {
         if(vents[vox]->dedans(coordX, coordY, coordZ)){
@@ -165,6 +166,9 @@ void affichage()
       obstacles[obs]->draw(0,0,1);
     }
   }
+  glColor3f(1, 0, 0);
+  glutSolidSphere(0.01, 10, 10);
+  glColor3f(1, 1, 1);
 
   //Affichage des zones de vents
   // for (size_t i = 0; i < nbVents; i++) {
