@@ -8,10 +8,9 @@
 
 #include "header.h"
 
-#define N 50
 char presse;
 int anglex,angley,x,y,xold,yold;
-Particules p(N);
+Particules p(NP);
 
 float coordY = 0.5;
 float sca = 1;
@@ -34,7 +33,7 @@ std::vector<double> vecDirV2{-1, 1, 0};
 Vent *v2 = new Vent(p1V2, p2V2, vecDirV2, 1.5);
 
 Vent *vents[] = {v1, v2};
-int nbVents = 2;
+int nbVents = 0;
 
 /* Création obstacle */
 
@@ -44,7 +43,7 @@ std::vector<double> rotation{0., 0., 45.};
 std::vector<double> scale{0.75, 0.25, 1};
 Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
 Obstacle *obstacles[] = {s1};
-int nbObstaces = 1;
+int nbObstaces = 0;
 
 // std::vector<double> centre{0.5,1,0.5};
 // float rayon = 0.5;
@@ -93,7 +92,7 @@ int main(int argc,char **argv)
 void animation()
 {
   if(!pause){
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < NP; i++)
     {
       if(p.v[i]->vie <= 0){
         p.v[i] = new Particule();
@@ -202,7 +201,7 @@ void affichage()
 
 
   //Affichage de(s) l'obstacle
-  if(obstacle){
+  if(!obstacle){
     for(int obs = 0; obs < nbObstaces; obs++){
       obstacles[obs]->draw(0,0,1);
     }
@@ -215,19 +214,6 @@ void affichage()
   // for (size_t i = 0; i < nbVents; i++) {
   //   vents[i]->draw(i, 0, 1);
   // }
-
-<<<<<<< HEAD
-  glBegin(GL_POINTS);
-  glColor3f(1, 1, 1);
-  for (size_t i = 0; i < NP; i++)
-  {
-    glVertex3f(
-      perlin(frand(-9, 9), frand(-9, 9)),
-      perlin(frand(-9, 9), frand(-9, 9)),
-      perlin(frand(-9, 9), frand(-9, 9))
-    );
-  }
-  glEnd();
 
   // affichagePerlin();
   //axes
@@ -248,11 +234,23 @@ void affichage()
      glVertex3f(0, 0,0.0);
      glVertex3f(0, 0,1);
  glEnd();
-=======
-  for (size_t i = 0; i < N; i++)
-    p.v[i]->draw();
 
->>>>>>> 9ab74e366c5f614542d0912c1970faace2303d4b
+  for (size_t i = 0; i < NP; i++)
+   p.v[i]->draw();
+
+  // glBegin(GL_QUADS);
+  // for (size_t i = 0; i < NC - 1; i++)
+  // {
+  //   for (size_t j = 0; j < NC - 1; j++)
+  //   {
+  //     glColor3f(perlin(i + 0.5, j + 0.5), perlin(i + 0.5, j + 0.5), perlin(i + 0.5, j + 0.5));
+  //     glVertex3f((double)i / 10, (double)j / 10, 0);
+  //     glVertex3f(((double)i / 10) + 0.1, (double)j / 10, 0);
+  //     glVertex3f(((double)i / 10) + 0.1, ((double)j / 10) + 0.1 , 0);
+  //     glVertex3f((double)i / 10, ((double)j / 10) + 0.1, 0);
+  //   }
+  // }
+  // glEnd();
   //On echange les buffers
   glFlush();
   glutSwapBuffers();
@@ -273,7 +271,7 @@ void clavier(unsigned char touche,int x,int y)
       break;
     case 'R' : /* Réinitialisation */
       // pause = false;
-      p.reinitialize(N);
+      p.reinitialize(NP);
       glutPostRedisplay();
       break;
     case 'P' : /* Pause */

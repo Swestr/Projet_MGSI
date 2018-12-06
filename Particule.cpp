@@ -8,7 +8,7 @@ Particule::Particule()
 
   position.push_back(frand(0, 1));
   position.push_back(0);
-  position.push_back(0.5);
+  position.push_back(frand(0, 1));
   // position.push_back(frand(0, 1));
   // position.push_back(frand(-0.1, 0.1));
   // position.push_back(frand(0, 1));
@@ -46,9 +46,10 @@ std::vector<double> Particule::nextPosition(std::vector<double> vect_dir, double
   std::vector<double> newPosition;
 
   //Il faudra ajouter le bruit de Perlin
-  double bruitX = 0;//frand(-0.001, 0.001);
-  double bruitY = 0;//frand(-0.001, 0.001);
-  double bruitZ = 0;//frand(-0.001, 0.001);
+  printf("%.2f %.2f %.2f\n", position[0], position[1], position[2]);
+  double bruitX = perlin(position[1] * 0.0001, position[2] * 0.0001);//frand(-0.001, 0.001);
+  double bruitY = abs(perlin(position[2] * 0.0001, position[0] * 0.0001));//frand(-0.001, 0.001);
+  double bruitZ = perlin(position[0] * 0.0001, position[1] * 0.0001);//frand(-0.001, 0.001);
 
   //Pourcentage d'attenuation
   int attPourc = 99;
