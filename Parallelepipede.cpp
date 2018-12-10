@@ -9,72 +9,180 @@ Parallelepipede::Parallelepipede(std::vector<double> t, std::vector<double> r, s
 
 std::vector<double> Parallelepipede::getTangente(std::vector<double> part, std::vector<double> I)
 {
-  std::vector<double> v{0, 1, 0};
-  return v;
+  std::vector<double> normales[6];
+  double valeur[6];
+
+  for (int i = 0; i < 6; i++) {
+    normales[i] = getNormales(i);
+    // normales[i] = normer(normales[i][0], normales[i][1], normales[i][2]);
+  }
+  for (int i = 0; i < 6; i++) {
+    valeur[i] = part[0] * normales[i][0] + part[1] * normales[i][1] + part[2] * normales[i][2] + normales[i][3];
+    printf("%d : %f,\t %f\n", i, valeur[i], part[0] * normales[i][0] + part[1] * normales[i][1] + part[2] * normales[i][2]);
+  }
+
+  int indice = 0;
+  int value = abs(valeur[0]);
+  for (int i = 1; i < 6; i++) {
+    if(value > abs(valeur[i]))
+    {
+      value = abs(valeur[i]);
+      indice = i;
+    }
+  }
+
+  printf("(%f, %f, %f)\n", normales[indice][0], normales[indice][1], normales[indice][2]);
+
+  std::vector<double> N = normales[indice];
+  // N = normer(N[0], N[1], N[2]);
+  I = normer(I[0], I[1], I[2]);
+
+  //R⃗=2(N⃗ .⃗I)N⃗ +⃗I
+  std::vector<double> R;
+  double NI = N[0]*I[0] + N[1]*I[1] + N[2]*I[2];
+  R.push_back(2 * (NI) * N[0] + I[0]);
+  R.push_back(2 * (NI) * N[1] + I[1]);
+  R.push_back(2 * (NI) * N[2] + I[2]);
+
+  R = normer(R[0], R[1], R[2]);
+
+  //R⃗=(⃗R. N⃗ )N⃗ +(R⃗−( ⃗R.N⃗ )N⃗ )
+  double RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
+  R[0] = RN * N[0] + (R[0] - RN * N[0]);
+  R[1] = RN * N[1] + (R[1] - RN * N[1]);
+  R[2] = RN * N[2] + (R[2] - RN * N[2]);
+
+  R = normer(R[0], R[1], R[2]);
+
+  //T⃗=⃗R−(⃗R. N⃗ )N
+  RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
+  std::vector<double> T;
+  T.push_back(R[0] - RN * N[0]);
+  T.push_back(R[1] - RN * N[1]);
+  T.push_back(R[2] - RN * N[2]);
+
+  return normer(T[0], T[1], T[2]);
+}
+
+std::vector<double> Parallelepipede::getNormales(int indice)
+{
+  std::vector<double> normales[6];
+  std::vector<double> point[6];
+  normales[0].push_back(0);   normales[0].push_back(1);   normales[0].push_back(0);
+  normales[1].push_back(0);   normales[1].push_back(-1);  normales[1].push_back(0);
+  normales[2].push_back(1);   normales[2].push_back(0);   normales[2].push_back(0);
+  normales[3].push_back(-1);  normales[3].push_back(0);   normales[3].push_back(0);
+  normales[4].push_back(0);   normales[4].push_back(0);   normales[4].push_back(1);
+  normales[5].push_back(0);   normales[5].push_back(0);   normales[5].push_back(-1);
+  point[0].push_back(0);      point[0].push_back(-0.5);   point[0].push_back(0);
+  point[1].push_back(0);      point[1].push_back(0.5);    point[1].push_back(0);
+  point[2].push_back(-0.5);   point[2].push_back(0);      point[2].push_back(0);
+  point[3].push_back(0.5);    point[3].push_back(0);      point[3].push_back(0);
+  point[4].push_back(0);      point[4].push_back(0);      point[4].push_back(-0.5);
+  point[5].push_back(0);      point[5].push_back(0);      point[5].push_back(0.5);
+
+  double x, y, z;
+  double rX = (rotation[0]) * (M_PI/180.);
+  x = normales[indice][0];
+  y = normales[indice][1];
+  z = normales[indice][2];
+  normales[indice][0] = x;
+  normales[indice][1] = cos(rX)*y - sin(rX)*z;
+  normales[indice][2] = sin(rX)*y + cos(rX)*z;
+  x = point[indice][0];
+  y = point[indice][1];
+  z = point[indice][2];
+  point[indice][0] = x;
+  point[indice][1] = cos(rX)*y - sin(rX)*z;
+  point[indice][2] = sin(rX)*y + cos(rX)*z;
+
+  double rY = (rotation[1]) * (M_PI/180.);
+  x = normales[indice][0];
+  y = normales[indice][1];
+  z = normales[indice][2];
+  normales[indice][0] = cos(rY)*x + sin(rY)*z;
+  normales[indice][1] = y;
+  normales[indice][2] = -sin(rY)*x + cos(rY)*z;
+  x = point[indice][0];
+  y = point[indice][1];
+  z = point[indice][2];
+  point[indice][0] = cos(rY)*x + sin(rY)*z;
+  point[indice][1] = y;
+  point[indice][2] = -sin(rY)*x + cos(rY)*z;
+
+  double rZ = (rotation[2]) * (M_PI/180.);
+  x = normales[indice][0];
+  y = normales[indice][1];
+  z = normales[indice][2];
+  normales[indice][0] = cos(rZ)*x - sin(rZ)*y;
+  normales[indice][1] = sin(rZ)*x + cos(rZ)*y;
+  normales[indice][2] = z;
+  x = point[indice][0];
+  y = point[indice][1];
+  z = point[indice][2];
+  point[indice][0] = cos(rZ)*x - sin(rZ)*y;
+  point[indice][1] = sin(rZ)*x + cos(rZ)*y;
+  point[indice][2] = z;
+
+  normales[indice][0] *= scale[0];
+  normales[indice][1] *= scale[1];
+  normales[indice][2] *= scale[2];
+
+  point[indice][0] *= scale[0];
+  point[indice][1] *= scale[1];
+  point[indice][2] *= scale[2];
+
+  normales[indice][0] += translate[0];
+  normales[indice][1] += translate[1];
+  normales[indice][2] += translate[2];
+
+  point[indice][0] += translate[0];
+  point[indice][1] += translate[1];
+  point[indice][2] += translate[2];
+
+  double a = normales[indice][0];
+  double b = normales[indice][1];
+  double c = normales[indice][2];
+
+  x = point[indice][0];
+  y = point[indice][1];
+  z = point[indice][2];
+
+  normales[indice].push_back(-(a*x+b*y+c*z));
+  return normales[indice];
 }
 
 bool Parallelepipede::dedans(float x, float y, float z)
 {
-  return rotate(x, y, z);
+  return rotateX(x, y, z);
 }
-
-bool Parallelepipede::rotate(float x, float y, float z)
+bool Parallelepipede::rotateX(float x, float y, float z)
 {
-  //Conversion des angles inverse en radians
-  double rX = (-rotation[0]) * (double)(M_PI/180.);
-  double rY = (-rotation[1]) * (double)(M_PI/180.);
-  double rZ = (-rotation[2]) * (double)(M_PI/180.);
-
-  std::vector<double> rotX;
-  rotX.push_back(x);
-  rotX.push_back(cos(rX)*y - sin(rX)*z);
-  rotX.push_back(sin(rX)*y + cos(rX)*z);
-  printf("rotX : (%f, %f, %f)\n", rotX[0], rotX[1], rotX[2]);
-
-  std::vector<double> rotY;
-  rotY.push_back(cos(rY)*x + sin(rY)*z);
-  rotY.push_back(y);
-  rotY.push_back(-sin(rY)*x + cos(rY)*z);
-  printf("rotY : (%f, %f, %f)\n", rotY[0], rotY[1], rotY[2]);
-
-  std::vector<double> rotZ;
-  rotZ.push_back(cos(rZ)*x - sin(rZ)*y);
-  rotZ.push_back(sin(rZ)*x + cos(rZ)*y);
-  rotZ.push_back(z);
-  printf("rotZ : (%f, %f, %f)\n", rotZ[0], rotZ[1], rotZ[2]);
-
-  double newX = (rotX[0] + rotY[0] + rotZ[0]) / 3.;
-  double newY = (rotX[1] + rotY[1] + rotZ[1]) / 3.;
-  double newZ = (rotX[2] + rotY[2] + rotZ[2]) / 3.;
-
-  printf("Anciennes coord : (%f, %f, %f)\n", x, y, z);
-  printf("Nouvelles coord : (%f, %f, %f)\n\n", newX, newY, newZ);
-
-  return translating(
-          x + x*cos(-rotation[y]) + z*sin(-rotation[y]) + x*cos(-rotation[z]) - y*sin(-rotation[z]),
-          y*cos(-rotation[x]) - z*sin(-rotation[x]) + y + x*sin(-rotation[z]) + y*cos(-rotation[z]),
-          y*sin(-rotation[x]) + z*cos(-rotation[x]) - x*sin(-rotation[y]) + z*cos(-rotation[y]) + z
-        );
-
-
-  // return translating(newX, newY, newZ);
+  double rX = (-rotation[0]) * (M_PI/180.);
+  return rotateY(x, cos(rX)*y - sin(rX)*z, sin(rX)*y + cos(rX)*z);
 }
-
-bool Parallelepipede::translating(float x, float y, float z)
+bool Parallelepipede::rotateY(float x, float y, float z)
 {
-  return scaling(x-translate[0], y-translate[1], z-translate[2]);
+  double rY = (-rotation[1]) * (M_PI/180.);
+  return rotateZ(cos(rY)*x + sin(rY)*z, y, -sin(rY)*x + cos(rY)*z);
 }
-
+bool Parallelepipede::rotateZ(float x, float y, float z)
+{
+  double rZ = (-rotation[2]) * (M_PI/180.);
+  return scaling(cos(rZ)*x - sin(rZ)*y, sin(rZ)*x + cos(rZ)*y, z);
+}
 bool Parallelepipede::scaling(float x, float y, float z)
 {
-  return unitaire(x/scale[0], y/scale[1], z/scale[2]);
+  return translating(x/scale[0], y/scale[1], z/scale[2]);
 }
-
+bool Parallelepipede::translating(float x, float y, float z)
+{
+  return unitaire(x-translate[0], y-translate[1], z-translate[2]);
+}
 bool Parallelepipede::unitaire(float x, float y, float z)
 {
-  return (0<=x) && (x<=1) && (0<=y) && (y<=1) && (0<=z) && (z<=1);
+  return (-0.5<=x) && (x<=0.5) && (-0.5<=y) && (y<=0.5) && (-0.5<=z) && (z<=0.5);
 }
-
 void Parallelepipede::draw(float r, float g, float b)
 {
   glPushMatrix();

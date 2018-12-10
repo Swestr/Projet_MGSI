@@ -38,12 +38,12 @@ int nbVents = 0;
 /* Création obstacle */
 
 
-std::vector<double> translation{0.5, 0.5, 0.5};
+std::vector<double> translation{1, 1, 1};
 std::vector<double> rotation{0., 0., 45.};
 std::vector<double> scale{0.75, 0.25, 1};
 Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
 Obstacle *obstacles[] = {s1};
-int nbObstaces = 0;
+int nbObstaces = 1;
 
 // std::vector<double> centre{0.5,1,0.5};
 // float rayon = 0.5;
@@ -161,7 +161,7 @@ void affichagePerlin()
      d[i] = (double*)malloc(sizeof(double) * NP);
      for (size_t j = 0; j < NP - w; j++)
      {
-       printf("%.2f %.2f %li %li\n", (double)di, (double)dj, i, j);
+       // printf("%.2f %.2f %li %li\n", (double)di, (double)dj, i, j);
        d[i][j] = perlin((double)di, (double)dj);
        dj += v * 2;
      }
@@ -201,7 +201,7 @@ void affichage()
 
 
   //Affichage de(s) l'obstacle
-  if(!obstacle){
+  if(obstacle){
     for(int obs = 0; obs < nbObstaces; obs++){
       obstacles[obs]->draw(0,0,1);
     }
@@ -238,19 +238,6 @@ void affichage()
   for (size_t i = 0; i < NP; i++)
    p.v[i]->draw();
 
-  // glBegin(GL_QUADS);
-  // for (size_t i = 0; i < NC - 1; i++)
-  // {
-  //   for (size_t j = 0; j < NC - 1; j++)
-  //   {
-  //     glColor3f(perlin(i + 0.5, j + 0.5), perlin(i + 0.5, j + 0.5), perlin(i + 0.5, j + 0.5));
-  //     glVertex3f((double)i / 10, (double)j / 10, 0);
-  //     glVertex3f(((double)i / 10) + 0.1, (double)j / 10, 0);
-  //     glVertex3f(((double)i / 10) + 0.1, ((double)j / 10) + 0.1 , 0);
-  //     glVertex3f((double)i / 10, ((double)j / 10) + 0.1, 0);
-  //   }
-  // }
-  // glEnd();
   //On echange les buffers
   glFlush();
   glutSwapBuffers();
