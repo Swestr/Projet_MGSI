@@ -15,8 +15,8 @@ Particule::Particule()
   // position.push_back(frand(0, 1));
 
   vitesse.push_back(frand(0.25, 1));
-  vitesse.push_back(frand(0.25, 1));
-  vitesse.push_back(frand(0.25, 1));
+  vitesse.push_back(vitesse[0]);
+  vitesse.push_back(vitesse[0]);
 
   r = 1;
   g = 1;
@@ -78,7 +78,7 @@ void Particule::move(std::vector<double> vect_dir, double speedCoeff)
 }
 void Particule::force_move(std::vector<double> vec_dir)
 {
-  position[0] += vec_dir[0] * 0.001;
-  position[1] += vec_dir[1] * 0.001;
-  position[2] += vec_dir[2] * 0.001;
+  position[0] += vec_dir[0] * 0.001 * vitesse[0];
+  position[1] += vec_dir[1] * 0.001 * vitesse[1];
+  position[2] += vec_dir[2] * 0.001 * vitesse[2];
 }

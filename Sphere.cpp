@@ -29,24 +29,16 @@ std::vector<double> Sphere::getTangente(std::vector<double> particule, std::vect
   R.push_back(2 * (NI) * N[1] + I[1]);
   R.push_back(2 * (NI) * N[2] + I[2]);
 
-  R = normer(R[0], R[1], R[2]);
-
-  //R⃗=(⃗R. N⃗ )N⃗ +(R⃗−( ⃗R.N⃗ )N⃗ )
-  double RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
-  R[0] = RN * N[0] + (R[0] - RN * N[0]);
-  R[1] = RN * N[1] + (R[1] - RN * N[1]);
-  R[2] = RN * N[2] + (R[2] - RN * N[2]);
-
-  R = normer(R[0], R[1], R[2]);
+  //R = normer(R[0], R[1], R[2]);
 
   //T⃗=⃗R−(⃗R. N⃗ )N
-  RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
+  double RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
   std::vector<double> T;
   T.push_back(R[0] - RN * N[0]);
   T.push_back(R[1] - RN * N[1]);
   T.push_back(R[2] - RN * N[2]);
 
-  return normer(T[0], T[1], T[2]);
+  return T;//normer(T[0], T[1], T[2]);
 }
 bool Sphere::dedans(float x, float y, float z)
 {

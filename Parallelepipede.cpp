@@ -14,27 +14,29 @@ std::vector<double> Parallelepipede::getTangente(std::vector<double> part, std::
 
   for (int i = 0; i < 6; i++) {
     normales[i] = getNormales(i);
+    // printf("normale[%d] : (%f, %f, %f)\n", i, normales[i][0], normales[i][1], normales[i][2]);
     // normales[i] = normer(normales[i][0], normales[i][1], normales[i][2]);
   }
   for (int i = 0; i < 6; i++) {
-    valeur[i] = part[0] * normales[i][0] + part[1] * normales[i][1] + part[2] * normales[i][2] + normales[i][3];
+    valeur[i] = abs(part[0] * normales[i][0] + part[1] * normales[i][1] + part[2] * normales[i][2] + normales[i][3]);
     printf("%d : %f,\t %f\n", i, valeur[i], part[0] * normales[i][0] + part[1] * normales[i][1] + part[2] * normales[i][2]);
   }
 
   int indice = 0;
-  int value = abs(valeur[0]);
+  double value = valeur[0];
   for (int i = 1; i < 6; i++) {
-    if(value > abs(valeur[i]))
+    if(value > valeur[i])
     {
-      value = abs(valeur[i]);
+      value = valeur[i];
       indice = i;
     }
   }
 
-  printf("(%f, %f, %f)\n", normales[indice][0], normales[indice][1], normales[indice][2]);
+  printf("indice : %d\n",indice);
 
   std::vector<double> N = normales[indice];
-  // N = normer(N[0], N[1], N[2]);
+
+  N = normer(N[0], N[1], N[2]);
   I = normer(I[0], I[1], I[2]);
 
   //R⃗=2(N⃗ .⃗I)N⃗ +⃗I
@@ -44,24 +46,18 @@ std::vector<double> Parallelepipede::getTangente(std::vector<double> part, std::
   R.push_back(2 * (NI) * N[1] + I[1]);
   R.push_back(2 * (NI) * N[2] + I[2]);
 
-  R = normer(R[0], R[1], R[2]);
-
-  //R⃗=(⃗R. N⃗ )N⃗ +(R⃗−( ⃗R.N⃗ )N⃗ )
-  double RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
-  R[0] = RN * N[0] + (R[0] - RN * N[0]);
-  R[1] = RN * N[1] + (R[1] - RN * N[1]);
-  R[2] = RN * N[2] + (R[2] - RN * N[2]);
-
-  R = normer(R[0], R[1], R[2]);
-
   //T⃗=⃗R−(⃗R. N⃗ )N
-  RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
+  double RN = N[0]*R[0] + N[1]*R[1] + N[2]*R[2];
   std::vector<double> T;
   T.push_back(R[0] - RN * N[0]);
   T.push_back(R[1] - RN * N[1]);
   T.push_back(R[2] - RN * N[2]);
 
-  return normer(T[0], T[1], T[2]);
+  // printf("N : (%f, %f, %f)\n", N[0], N[1], N[2]);
+  // printf("T : (%f, %f, %f)\n", T[0], T[1], T[2]);
+  // printf("part : (%f, %f, %f)\n", part[0], part[1], part[2]);
+
+  return T;
 }
 
 std::vector<double> Parallelepipede::getNormales(int indice)
@@ -82,6 +78,21 @@ std::vector<double> Parallelepipede::getNormales(int indice)
   point[5].push_back(0);      point[5].push_back(0);      point[5].push_back(0.5);
 
   double x, y, z;
+
+  point[indice][0] += translate[0];
+  point[indice][1] += translate[1];
+  point[indice][2] += translate[2];
+
+  point[indice][0] *= scale[0];
+  point[indice][1] *= scale[1];
+  point[indice][2] *= scale[2];
+
+  normales[indice][0] *= scale[0];
+  normales[indice][1] *= scale[1];
+  normales[indice][2] *= scale[2];
+
+
+
   double rX = (rotation[0]) * (M_PI/180.);
   x = normales[indice][0];
   y = normales[indice][1];
@@ -124,29 +135,17 @@ std::vector<double> Parallelepipede::getNormales(int indice)
   point[indice][1] = sin(rZ)*x + cos(rZ)*y;
   point[indice][2] = z;
 
-  normales[indice][0] *= scale[0];
-  normales[indice][1] *= scale[1];
-  normales[indice][2] *= scale[2];
-
-  point[indice][0] *= scale[0];
-  point[indice][1] *= scale[1];
-  point[indice][2] *= scale[2];
-
-  normales[indice][0] += translate[0];
-  normales[indice][1] += translate[1];
-  normales[indice][2] += translate[2];
-
-  point[indice][0] += translate[0];
-  point[indice][1] += translate[1];
-  point[indice][2] += translate[2];
+  // normales[indice][0] += translate[0];
+  // normales[indice][1] += translate[1];
+  // normales[indice][2] += translate[2];
 
   double a = normales[indice][0];
   double b = normales[indice][1];
   double c = normales[indice][2];
-
   x = point[indice][0];
   y = point[indice][1];
   z = point[indice][2];
+
 
   normales[indice].push_back(-(a*x+b*y+c*z));
   return normales[indice];

@@ -38,18 +38,18 @@ int nbVents = 0;
 /* Création obstacle */
 
 
-std::vector<double> translation{1, 1, 1};
-std::vector<double> rotation{0., 0., 45.};
-std::vector<double> scale{0.75, 0.25, 1};
-Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
-Obstacle *obstacles[] = {s1};
-int nbObstaces = 1;
-
-// std::vector<double> centre{0.5,1,0.5};
-// float rayon = 0.5;
-// Obstacle *s1 = new Sphere(centre, rayon);
+// std::vector<double> translation{1, 1, 1};
+// std::vector<double> rotation{0., 0., 45.};
+// std::vector<double> scale{0.75, 0.25, 1};
+// Obstacle *s1 = new Parallelepipede(translation, rotation, scale);
 // Obstacle *obstacles[] = {s1};
 // int nbObstaces = 1;
+
+std::vector<double> centre{0.5,1,0.5};
+float rayon = 0.5;
+Obstacle *s1 = new Sphere(centre, rayon);
+Obstacle *obstacles[] = {s1};
+int nbObstaces = 1;
 
 /* Prototype des fonctions */
 void affichage();
@@ -116,7 +116,7 @@ void animation()
         std::vector<double> nextPosition = p.v[i]->nextPosition(vec_dir, speedCoeff);
         if(obst->dedans(nextPosition[0], nextPosition[1], nextPosition[2])){
           vec_dir = obst->getTangente(p.v[i]->position, p.v[i]->direction);
-          p.v[i]->r = 0;
+          p.v[i]->r = 1;
           p.v[i]->g = 0;
           p.v[i]->force_move(vec_dir);
           leave = true;
