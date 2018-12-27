@@ -1,11 +1,22 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#ifdef __APPLE__
-#include <GLUT/glut.h> /* Pour Mac OS X */
-#else
-#include <GL/glut.h>   /* Pour les autres systemes */
-#endif
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdlib.h>
+#include <stdio.h>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
+#include <math.h>
+#include "shader.hpp"
+#include <string.h>
+
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+using namespace glm;
 
 #define NC 10
 #define NP 100
