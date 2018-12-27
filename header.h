@@ -10,9 +10,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <math.h>
-#include "shader.hpp"
 #include <string.h>
-
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -21,6 +19,7 @@ using namespace glm;
 #define NC 10
 #define NP 100
 
+#include "shader.hpp"
 #include "Class/Particule.h"
 #include "Class/Particules.h"
 #include "Class/Vent.h"
