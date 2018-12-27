@@ -61,4 +61,5 @@ if (angleDiffuse > 0)
 
 //lumiere finale
     finalColor = vec4( tex * (ambient + (facteurAttenuation *(diffuse + speculaire)) ),0.0);
+    // finalColor = vec4( 1, 1, 1,0.0);
 }

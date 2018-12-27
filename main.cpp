@@ -15,9 +15,11 @@ float coordY = 0.5, sca = 1;
 bool obstacle = true, pause = false, pas = false;
 
 /*Shader*/
-GLuint VBO_sommets, VBO_indices, VBO_UVtext, VAO;
+GLuint VBO_sommets, VBO_indices, VBO_UVtext, VBO_normales, VAO;
 GLfloat sommets[NP*8*3];
+GLfloat normales[NP*6*3];
 GLuint faces[NP*6];
+GLuint coordTexture[NP*6*4];
 GLuint programID;
 glm::mat4 MVP;
 glm::mat4 Model, View, Projection;
@@ -37,9 +39,9 @@ GLfloat materialShininess=3.;
 vec3 materialSpecularColor(1.,1.,1);
 vec3 LightPosition(1.,0.,.5);
 vec3 LightIntensities(1.,1.,1.);
-GLfloat LightAttenuation =1.;
-GLfloat LightDiffuseCoefficient=.1;
-GLfloat LightAmbientCoefficient=.1;
+GLfloat LightAttenuation =.1;
+GLfloat LightDiffuseCoefficient=1;
+GLfloat LightAmbientCoefficient=1;
 GLuint image ;
 GLuint bufTexture;
 GLuint locationTexture;
@@ -124,20 +126,20 @@ int main(int argc,char **argv)
 
 	initOpenGL();
 
-  p.getVBOS(sommets, faces);
+  p.getVBOS(sommets, faces, normales, coordTexture);
 
   genereVBO();
   initTexture();
 
   /* Initialisation d'OpenGL */
-  // glClearColor(0.0,0.0,0.0,0.0);
-  // glColor3f(1.0,1.0,1.0);
-  // glPointSize(2.0);
-  // glEnable(GL_DEPTH_TEST);
+  glClearColor(0.0,0.0,0.0,0.0);
+  glColor3f(1.0,1.0,1.0);
+  glPointSize(2.0);
+  glEnable(GL_DEPTH_TEST);
 
   /* enregistrement des fonctions de rappel */
   glutDisplayFunc(affichage);
-  glutIdleFunc(animation);
+  // glutIdleFunc(animation);
   glutKeyboardFunc(clavier);
   glutReshapeFunc(reshape);
   glutMouseFunc(mouse);
@@ -164,7 +166,7 @@ void initTexture()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexImage2D(GL_TEXTURE_2D, 0, 3, iwidth,iheight, 0, GL_RGB,GL_UNSIGNED_BYTE,image);
   locationTexture = glGetUniformLocation(programID, "myTextureSampler");
-  glBindAttribLocation(programID, 1, "vertexUV");
+  glBindAttribLocation(programID, 3, "vertexUV");
 }
 
 GLubyte* glmReadPPM(char* filename, int* width, int* height)
@@ -301,6 +303,7 @@ void affichagePerlin()
 void affichage()
 {
 
+    glClearColor(1.0,0.0,0.0,0.0);
   /* effacement de l'image avec la couleur de fond */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glShadeModel(GL_SMOOTH);
@@ -311,6 +314,8 @@ void affichage()
   glRotatef(anglex,0.0,1.0,0.0);
   gluLookAt(0.5f, coordY, 0.5f, 0.5f, coordY, 0.0f, 0.0f, 1.0f, 0.0f);
 
+  animation();
+  p.getVBOS(sommets, faces, normales, coordTexture);
 
   //Affichage de(s) l'obstacle
   if(obstacle){
@@ -343,6 +348,7 @@ void affichage()
 
   //On echange les buffers
   glFlush();
+  // glutPostRedisplay();
   glutSwapBuffers();
 }
 
@@ -363,14 +369,22 @@ void genereVBO ()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO_indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(faces),faces , GL_STATIC_DRAW);
 
-    // if(glIsBuffer(VBO_UVtext) == GL_TRUE) glDeleteBuffers(1, &VBO_UVtext);
-    // glGenBuffers(1, &VBO_UVtext);
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO_UVtext);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(coordTexture),coordTexture , GL_STATIC_DRAW);
-    // glVertexAttribPointer (indexUVTexture, 2, GL_FLOAT, GL_FALSE, 0,  (void*)0  );
+    if(glIsBuffer(VBO_UVtext) == GL_TRUE) glDeleteBuffers(1, &VBO_UVtext);
+    glGenBuffers(1, &VBO_UVtext);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_UVtext);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(coordTexture),coordTexture , GL_STATIC_DRAW);
+    glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0,  (void*)0  );
 
+    if(glIsBuffer(VBO_normales) == GL_TRUE) glDeleteBuffers(1, &VBO_normales);
+    glGenBuffers(1, &VBO_normales);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_normales);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(normales),normales , GL_STATIC_DRAW);
+    glVertexAttribPointer ( 2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0  );
+
+   glEnableVertexAttribArray(0);
    glEnableVertexAttribArray(1);
-   // glEnableVertexAttribArray(indexUVTexture);
+   glEnableVertexAttribArray(2);
+
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
  }
@@ -379,8 +393,9 @@ void deleteVBO()
 {
    glDeleteBuffers(1, &VBO_sommets);
    glDeleteBuffers(1, &VBO_indices);
-   // glDeleteBuffers(1, &VBO_UVtext);
-       glDeleteBuffers(1, &VAO);
+   glDeleteBuffers(1, &VBO_UVtext);
+   glDeleteBuffers(1, &VBO_normales);
+   glDeleteBuffers(1, &VAO);
 }
 
 void traceObjet()

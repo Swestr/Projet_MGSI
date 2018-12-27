@@ -6,12 +6,12 @@ Particule::Particule()
 {
   vie = frand(150, 8000);
 
+  // position.push_back(frand(0, 1));
+  // position.push_back(0);
+  // position.push_back(0.7);
   position.push_back(frand(0, 1));
-  position.push_back(0);
-  position.push_back(0.7);
-  // position.push_back(frand(0, 1));
-  // position.push_back(frand(0, 1));
-  // position.push_back(frand(-0.1, 0.1));
+  position.push_back(frand(0, 1));
+  position.push_back(frand(-0.1, 0.1));
   // position.push_back(frand(0, 1));
 
   vitesse.push_back(frand(0.25, 1));
