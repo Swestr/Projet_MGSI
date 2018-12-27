@@ -17,7 +17,7 @@
 using namespace glm;
 
 #define NC 10
-#define NP 1
+#define NP 100
 
 #include "shader.hpp"
 #include "Class/Particule.h"

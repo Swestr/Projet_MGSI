@@ -9,7 +9,7 @@ class Particules
     std::vector<Particule*> v;
     Particules(int);
     void reinitialize(int);
-    void getVBOS(GLfloat*, GLuint*, GLfloat*, GLuint*);
+    void getVBOS(GLfloat*, GLuint*, GLuint*);
 };
 
 #endif

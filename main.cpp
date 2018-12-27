@@ -13,13 +13,16 @@ char presse;
 int anglex,angley,x,y,xold,yold;
 float coordY = 0.5, sca = 1;
 bool obstacle = true, pause = false, pas = false;
+bool mouseLeftDown;
+bool mouseRightDown;
+bool mouseMiddleDown;
+float mouseX, mouseY;
 
 /*Shader*/
 GLuint VBO_sommets, VBO_indices, VBO_UVtext, VBO_normales, VAO;
 GLfloat sommets[NP*8*3];
-GLfloat normales[NP*6*3];
-GLuint faces[NP*6];
-GLuint coordTexture[NP*6*4];
+GLuint faces[NP*6*4];
+GLuint coordTexture[NP*6*8];
 GLuint programID;
 glm::mat4 MVP;
 glm::mat4 Model, View, Projection;
@@ -35,13 +38,6 @@ GLuint locLightAmbientCoefficient;
 GLuint locLightDiffuseCoefficient;
 GLuint locLightSpecularLightIntensities;
 vec3 cameraPosition(0.,0.,3.);
-GLfloat materialShininess=3.;
-vec3 materialSpecularColor(1.,1.,1);
-vec3 LightPosition(1.,0.,.5);
-vec3 LightIntensities(1.,1.,1.);
-GLfloat LightAttenuation =.1;
-GLfloat LightDiffuseCoefficient=1;
-GLfloat LightAmbientCoefficient=1;
 GLuint image ;
 GLuint bufTexture;
 GLuint locationTexture;
@@ -87,7 +83,7 @@ void animation();
 void clavier(unsigned char touche,int x,int y);
 void reshape(int x,int y);
 void mouse(int bouton,int etat,int x,int y);
-void mousemotion(int x,int y);
+void mousemotion(int x, int y);
 void processSpecialKeys(int key, int xx, int yy);
 void genereVBO ();
 void traceObjet();
@@ -126,7 +122,7 @@ int main(int argc,char **argv)
 
 	initOpenGL();
 
-  p.getVBOS(sommets, faces, normales, coordTexture);
+  p.getVBOS(sommets, faces, coordTexture);
 
   genereVBO();
   initTexture();
@@ -139,7 +135,7 @@ int main(int argc,char **argv)
 
   /* enregistrement des fonctions de rappel */
   glutDisplayFunc(affichage);
-  // glutIdleFunc(animation);
+  glutIdleFunc(animation);
   glutKeyboardFunc(clavier);
   glutReshapeFunc(reshape);
   glutMouseFunc(mouse);
@@ -166,7 +162,7 @@ void initTexture()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexImage2D(GL_TEXTURE_2D, 0, 3, iwidth,iheight, 0, GL_RGB,GL_UNSIGNED_BYTE,image);
   locationTexture = glGetUniformLocation(programID, "myTextureSampler");
-  glBindAttribLocation(programID, 3, "vertexUV");
+  // glBindAttribLocation(programID, 3, "vertexUV");
 }
 
 GLubyte* glmReadPPM(char* filename, int* width, int* height)
@@ -251,6 +247,7 @@ void animation()
       //Déplacement de la particule
       p.v[i]->move(vec_dir, speedCoeff);
     }
+    traceObjet();
 
     glutPostRedisplay();
     if(pas){
@@ -302,9 +299,6 @@ void affichagePerlin()
 
 void affichage()
 {
-
-    glClearColor(1.0,0.0,0.0,0.0);
-  /* effacement de l'image avec la couleur de fond */
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glShadeModel(GL_SMOOTH);
 
@@ -314,8 +308,7 @@ void affichage()
   glRotatef(anglex,0.0,1.0,0.0);
   gluLookAt(0.5f, coordY, 0.5f, 0.5f, coordY, 0.0f, 0.0f, 1.0f, 0.0f);
 
-  animation();
-  p.getVBOS(sommets, faces, normales, coordTexture);
+  p.getVBOS(sommets, faces, coordTexture);
 
   //Affichage de(s) l'obstacle
   if(obstacle){
@@ -344,18 +337,14 @@ void affichage()
 
   // for (size_t i = 0; i < NP; i++)
   //   p.v[i]->draw();
-
-
-  //On echange les buffers
   glFlush();
-  // glutPostRedisplay();
   glutSwapBuffers();
 }
 
 void genereVBO ()
 {
     glGenBuffers(1, &VAO);
-    glBindVertexArray(VAO); // ici on bind le VAO , c'est lui qui recupèrera les configurations des VBO glVertexAttribPointer , glEnableVertexAttribArray...
+    glBindVertexArray(VAO);
 
 
     if(glIsBuffer(VBO_sommets) == GL_TRUE) glDeleteBuffers(1, &VBO_sommets);
@@ -365,7 +354,7 @@ void genereVBO ()
     glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 
     if(glIsBuffer(VBO_indices) == GL_TRUE) glDeleteBuffers(1, &VBO_indices);
-    glGenBuffers(1, &VBO_indices); // ATTENTIOn IBO doit etre un GL_ELEMENT_ARRAY_BUFFER
+    glGenBuffers(1, &VBO_indices);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO_indices);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(faces),faces , GL_STATIC_DRAW);
 
@@ -375,15 +364,8 @@ void genereVBO ()
     glBufferData(GL_ARRAY_BUFFER, sizeof(coordTexture),coordTexture , GL_STATIC_DRAW);
     glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0,  (void*)0  );
 
-    if(glIsBuffer(VBO_normales) == GL_TRUE) glDeleteBuffers(1, &VBO_normales);
-    glGenBuffers(1, &VBO_normales);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_normales);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(normales),normales , GL_STATIC_DRAW);
-    glVertexAttribPointer ( 2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0  );
-
-   glEnableVertexAttribArray(0);
-   glEnableVertexAttribArray(1);
-   glEnableVertexAttribArray(2);
+   glEnableVertexAttribArray(0); //Sommets
+   glEnableVertexAttribArray(1); //Textures
 
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
@@ -394,7 +376,6 @@ void deleteVBO()
    glDeleteBuffers(1, &VBO_sommets);
    glDeleteBuffers(1, &VBO_indices);
    glDeleteBuffers(1, &VBO_UVtext);
-   glDeleteBuffers(1, &VBO_normales);
    glDeleteBuffers(1, &VAO);
 }
 
@@ -409,10 +390,8 @@ void traceObjet()
  glUniformMatrix4fv(MatrixIDPerspective, 1, GL_FALSE, &Projection[0][0]);
 
   //pour l'affichage
-	glBindVertexArray(VAO); // on active le VAO
-   glDrawElements(GL_QUADS,  sizeof(faces), GL_UNSIGNED_INT, 0);// on appelle la fonction dessin
-	glBindVertexArray(0);    // on desactive les VAO
-  glUseProgram(0);         // et le pg
+	glBindVertexArray(VAO);
+  glDrawElements(GL_QUADS,  sizeof(faces), GL_UNSIGNED_INT, 0);
 
 }
 
@@ -537,32 +516,87 @@ void reshape(int w,int h)
 
 }
 
-void mouse(int button, int state,int x,int y)
+void mouse(int button, int state, int x, int y)
 {
-  /* si on appuie sur le bouton gauche */
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-  {
-    presse = 1; /* le booleen presse passe a 1 (vrai) */
-    xold = x; /* on sauvegarde la position de la souris */
-    yold=y;
-  }
-  /* si on relache le bouton gauche */
-  if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
-    presse=0; /* le booleen presse passe a 0 (faux) */
-}
+    mouseX = x;
+    mouseY = y;
 
-void mousemotion(int x,int y)
-{
-    if (presse) /* si le bouton gauche est presse */
+    if(button == GLUT_LEFT_BUTTON)
     {
-      /* on modifie les angles de rotation de l'objet
-	 en fonction de la position actuelle de la souris et de la derniere
-	 position sauvegardee */
-      anglex=anglex+(x-xold);
-      angley=angley+(y-yold);
-      glutPostRedisplay(); /* on demande un rafraichissement de l'affichage */
+        if(state == GLUT_DOWN)
+        {
+            mouseLeftDown = true;
+        }
+        else if(state == GLUT_UP)
+            mouseLeftDown = false;
     }
 
-    xold=x; /* sauvegarde des valeurs courante de le position de la souris */
-    yold=y;
-  }
+    else if(button == GLUT_RIGHT_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            mouseRightDown = true;
+        }
+        else if(state == GLUT_UP)
+            mouseRightDown = false;
+    }
+
+    else if(button == GLUT_MIDDLE_BUTTON)
+    {
+        if(state == GLUT_DOWN)
+        {
+            mouseMiddleDown = true;
+        }
+        else if(state == GLUT_UP)
+            mouseMiddleDown = false;
+    }
+}
+
+
+void mousemotion(int x, int y)
+{
+    if(mouseLeftDown)
+    {
+        cameraAngleY += (x - mouseX);
+        cameraAngleX += (y - mouseY);
+        mouseX = x;
+        mouseY = y;
+    }
+    if(mouseRightDown)
+    {
+        cameraDistance += (y - mouseY) * 0.2f;
+        mouseY = y;
+    }
+
+    glutPostRedisplay();
+}
+
+// void mouse(int button, int state,int x,int y)
+// {
+//   /* si on appuie sur le bouton gauche */
+//   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+//   {
+//     presse = 1; /* le booleen presse passe a 1 (vrai) */
+//     xold = x; /* on sauvegarde la position de la souris */
+//     yold=y;
+//   }
+//   /* si on relache le bouton gauche */
+//   if (button == GLUT_LEFT_BUTTON && state == GLUT_UP)
+//     presse=0; /* le booleen presse passe a 0 (faux) */
+// }
+//
+// void mousemotion(int x,int y)
+// {
+//     if (presse) /* si le bouton gauche est presse */
+//     {
+//       /* on modifie les angles de rotation de l'objet
+// 	 en fonction de la position actuelle de la souris et de la derniere
+// 	 position sauvegardee */
+//       anglex=anglex+(x-xold);
+//       angley=angley+(y-yold);
+//       glutPostRedisplay(); /* on demande un rafraichissement de l'affichage */
+//     }
+//
+//     xold=x; /* sauvegarde des valeurs courante de le position de la souris */
+//     yold=y;
+//   }
